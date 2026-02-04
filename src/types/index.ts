@@ -1,18 +1,17 @@
-export type ContractStatus = "Open" | "Closed" | "Draft" | "In Progress";
+export type ContractStatus = "Draft" | "Open" | "Closed";
+export type ShipmentStatus = "Draft" | "In Progress" | "Shipped" | "Completed";
 
-export interface Contract {
+export interface MasterContract {
   id: string;
   contractNumber: string;
   rcnContractNumber: string;
   dateSigningContract: string;
   year: string;
-  grade: string;
+  gradeId: string;
+  gradeName: string;
   status: ContractStatus;
   shipmentPeriod: string;
   incoterms: string;
-  contractPriceUsdMt: number;
-  contractPriceUsdLbs: number;
-  contractPriceUsdKgs: number;
   totalContractQuantityKgs: number;
   totalContractValue: number;
   shippedQuantityKgs: number;
@@ -20,17 +19,31 @@ export interface Contract {
   openValue: number;
   openBookQty: number;
   openBookValue: number;
-  countryOfOrigin: string;
-  factory: string;
   allocationSummary: string;
 }
 
-export interface ShipmentAdvice {
+export interface SubContract {
   id: string;
-  contractNumber: string;
+  masterContractId: string;
+  subContractNumber: string;
+  countryOfOrigin: "India" | "Vietnam";
+  factory?: string;
+  allocatedQtyKgs: number;
+  contractPriceUsdKgs: number;
+  subContractValue: number;
+  status: "Open" | "Closed";
+  isAllocationConfirmed: boolean;
+}
+
+export interface Shipment {
+  id: string;
+  masterContractId: string;
+  subContractId: string;
+  countryOfOrigin: "India" | "Vietnam";
+  factory: string;
+  shipmentStatus: ShipmentStatus;
   containerNumber: string;
   linerSealNumber: string;
-  factory: string;
   shippedDate: string;
   blNo: string;
   vesselName: string;
@@ -39,22 +52,26 @@ export interface ShipmentAdvice {
   bookingNumber: string;
   estEtaDestination: string;
   qtyShippedKgs: number;
-  updatedIspPortal: string;
+  updatedIspPortal: boolean;
   comments: string;
   note: string;
   remark: string;
-  status: "Planned" | "Shipped";
 }
 
-export interface AllocationLine {
+export interface PricingMaster {
   id: string;
-  contractNumber: string;
-  countryOfOrigin: "India" | "Vietnam";
-  factory?: string;
-  allocatedQtyKgs: number;
+  gradeId: string;
+  countryId: "India" | "Vietnam";
+  contractPriceUsdKgs: number;
+  contractPriceUsdMt?: number;
+  contractPriceUsdLbs?: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  isActive: boolean;
+  notes?: string;
 }
 
-export interface ReconciliationRecord {
+export interface ReconciliationRow {
   id: string;
   contractNumber: string;
   buyerOpenQty: number;
@@ -66,6 +83,7 @@ export interface ReconciliationRecord {
   status: "Matched" | "Mismatch" | "Resolved";
   owner: string;
   lastUpdated: string;
+  notes: string;
 }
 
 export interface EmailLogEntry {
@@ -75,4 +93,13 @@ export interface EmailLogEntry {
   date: string;
   status: "Success" | "Failed";
   retryCount: number;
+}
+
+export interface WeeklyReportLog {
+  id: string;
+  contractId: string;
+  contractNumber: string;
+  fileName: string;
+  runDate: string;
+  status: "Success" | "Failed";
 }

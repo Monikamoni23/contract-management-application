@@ -13,19 +13,19 @@ import { FormField } from "@/components/form-field";
 import { Stepper } from "@/components/stepper";
 import { useAppData } from "@/context/app-data";
 import { useToast } from "@/components/toast-provider";
+import { grades } from "@/mock/pricing";
 
 const contractSchema = z.object({
   contractNumber: z.string().min(3, "Contract number is required"),
   rcnContractNumber: z.string().min(3, "RCN contract number is required"),
   dateSigningContract: z.string().min(1, "Signing date is required"),
   year: z.string().min(4, "Year is required"),
-  grade: z.string().min(1, "Grade is required"),
+  gradeId: z.string().min(1, "Grade is required"),
   shipmentPeriod: z.string().min(1, "Shipment period is required"),
   incoterms: z.string().min(1, "Incoterms are required"),
   totalContractQuantityKgs: z.coerce.number().min(1, "Total quantity is required"),
-  contractPriceUsdKgs: z.coerce.number().min(1, "Contract price is required"),
-  countryOfOrigin: z.string().min(1, "Country is required"),
-  factory: z.string().min(1, "Factory is required"),
+  openBookQty: z.coerce.number().min(0, "OPEN BOOK qty is required"),
+  openBookValue: z.coerce.number().min(0, "OPEN BOOK value is required"),
   notes: z.string().optional()
 });
 
@@ -44,38 +44,35 @@ export default function ContractCreatePage() {
     resolver: zodResolver(contractSchema),
     defaultValues: {
       year: "2024",
-      grade: "Arabica Grade 1",
+      gradeId: grades[0]?.id,
       incoterms: "FOB",
-      countryOfOrigin: "India"
+      openBookQty: 0,
+      openBookValue: 0
     }
   });
 
   const onSubmit = (values: ContractFormValues) => {
-    const totalValue = values.totalContractQuantityKgs * values.contractPriceUsdKgs;
-    const id = `c-${crypto.randomUUID()}`;
+    const grade = grades.find((item) => item.id === values.gradeId) ?? grades[0];
+    const id = `mc-${crypto.randomUUID()}`;
     addContract({
       id,
       contractNumber: values.contractNumber,
       rcnContractNumber: values.rcnContractNumber,
       dateSigningContract: values.dateSigningContract,
       year: values.year,
-      grade: values.grade,
+      gradeId: values.gradeId,
+      gradeName: grade?.name ?? values.gradeId,
       status: "Draft",
       shipmentPeriod: values.shipmentPeriod,
       incoterms: values.incoterms,
-      contractPriceUsdMt: values.contractPriceUsdKgs * 1000,
-      contractPriceUsdLbs: Number((values.contractPriceUsdKgs / 2.205).toFixed(2)),
-      contractPriceUsdKgs: values.contractPriceUsdKgs,
       totalContractQuantityKgs: values.totalContractQuantityKgs,
-      totalContractValue: totalValue,
+      totalContractValue: 0,
       shippedQuantityKgs: 0,
       openQty: values.totalContractQuantityKgs,
-      openValue: totalValue,
-      openBookQty: values.totalContractQuantityKgs / 2,
-      openBookValue: totalValue / 2,
-      countryOfOrigin: values.countryOfOrigin,
-      factory: values.factory,
-      allocationSummary: "Pending allocation"
+      openValue: 0,
+      openBookQty: values.openBookQty,
+      openBookValue: values.openBookValue,
+      allocationSummary: "India: 0 | Vietnam: 0"
     });
     pushToast({
       title: "Contract created",
@@ -87,7 +84,7 @@ export default function ContractCreatePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Create Contract</h2>
+        <h2 className="text-2xl font-semibold">Create Master Contract</h2>
         <p className="text-sm text-muted-foreground">Capture master contract details for Phase-1.</p>
       </div>
       <Stepper currentStep={0} />
@@ -98,7 +95,7 @@ export default function ContractCreatePage() {
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
             <FormField label="Contract Number" error={errors.contractNumber?.message}>
-              <Input {...register("contractNumber")} placeholder="CT-2024-013" />
+              <Input {...register("contractNumber")} placeholder="MC-2024-013" />
             </FormField>
             <FormField label="RCN Contract Number" error={errors.rcnContractNumber?.message}>
               <Input {...register("rcnContractNumber")} placeholder="RCN-7793" />
@@ -109,27 +106,22 @@ export default function ContractCreatePage() {
             <FormField label="Year" error={errors.year?.message}>
               <Input {...register("year")} placeholder="2024" />
             </FormField>
-            <FormField label="Grade" error={errors.grade?.message}>
-              <Select defaultValue="Arabica Grade 1" onValueChange={(value) => setValue("grade", value)}>
+            <FormField label="Grade" error={errors.gradeId?.message}>
+              <Select defaultValue={grades[0]?.id} onValueChange={(value) => setValue("gradeId", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select grade" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectViewport>
-                    {[
-                      "Arabica Grade 1",
-                      "Arabica Grade 2",
-                      "Robusta Premium",
-                      "Robusta Standard"
-                    ].map((grade) => (
-                      <SelectItem key={grade} value={grade}>
-                        {grade}
+                    {grades.map((grade) => (
+                      <SelectItem key={grade.id} value={grade.id}>
+                        {grade.name}
                       </SelectItem>
                     ))}
                   </SelectViewport>
                 </SelectContent>
               </Select>
-              <input type="hidden" {...register("grade")} />
+              <input type="hidden" {...register("gradeId")} />
             </FormField>
             <FormField label="Shipment Period as per Contract" error={errors.shipmentPeriod?.message}>
               <Input {...register("shipmentPeriod")} placeholder="Jul-Sep 2024" />
@@ -141,7 +133,7 @@ export default function ContractCreatePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectViewport>
-                    {["FOB", "CIF", "CFR"].map((term) => (
+                    {"FOB,CIF,CFR".split(",").map((term) => (
                       <SelectItem key={term} value={term}>
                         {term}
                       </SelectItem>
@@ -151,31 +143,14 @@ export default function ContractCreatePage() {
               </Select>
               <input type="hidden" {...register("incoterms")} />
             </FormField>
-            <FormField label="Contract Price USD (KGS)" error={errors.contractPriceUsdKgs?.message}>
-              <Input type="number" step="0.01" {...register("contractPriceUsdKgs")} />
-            </FormField>
             <FormField label="Total Contract Quantity (KGS)" error={errors.totalContractQuantityKgs?.message}>
               <Input type="number" {...register("totalContractQuantityKgs")} />
             </FormField>
-            <FormField label="Country of Origin" error={errors.countryOfOrigin?.message}>
-              <Select defaultValue="India" onValueChange={(value) => setValue("countryOfOrigin", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectViewport>
-                    {["India", "Vietnam"].map((country) => (
-                      <SelectItem key={country} value={country}>
-                        {country}
-                      </SelectItem>
-                    ))}
-                  </SelectViewport>
-                </SelectContent>
-              </Select>
-              <input type="hidden" {...register("countryOfOrigin")} />
+            <FormField label="OPEN BOOK Qty" error={errors.openBookQty?.message}>
+              <Input type="number" {...register("openBookQty")} />
             </FormField>
-            <FormField label="Factory" error={errors.factory?.message}>
-              <Input {...register("factory")} placeholder="Factory name" />
+            <FormField label="OPEN BOOK Value" error={errors.openBookValue?.message}>
+              <Input type="number" step="0.01" {...register("openBookValue")} />
             </FormField>
             <FormField label="Notes" className="md:col-span-2">
               <Textarea {...register("notes")} placeholder="Optional notes for logistics" />

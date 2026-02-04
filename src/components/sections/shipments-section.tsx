@@ -10,12 +10,15 @@ import { DrawerForm } from "@/components/drawer-form";
 import { FormField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAppData } from "@/context/app-data";
-import { Contract } from "@/types";
+import { MasterContract, Shipment } from "@/types";
 import { useToast } from "@/components/toast-provider";
+import { StatusBadge } from "@/components/status-badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+import { DataTable } from "@/components/data-table";
 
 const shipmentSchema = z.object({
+  subContractId: z.string().min(1, "Sub-contract required"),
   containerNumber: z.string().min(1, "Container number required"),
   linerSealNumber: z.string().min(1, "Liner seal required"),
   factory: z.string().min(1, "Factory required"),
@@ -27,7 +30,7 @@ const shipmentSchema = z.object({
   bookingNumber: z.string().min(1, "Booking number required"),
   estEtaDestination: z.string().min(1, "ETA required"),
   qtyShippedKgs: z.coerce.number().min(1, "Qty shipped required"),
-  updatedIspPortal: z.string().min(1, "Updated ISP required"),
+  updatedIspPortal: z.boolean(),
   comments: z.string().optional(),
   note: z.string().optional(),
   remark: z.string().optional()
@@ -35,33 +38,81 @@ const shipmentSchema = z.object({
 
 type ShipmentFormValues = z.infer<typeof shipmentSchema>;
 
-export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; onAdvance: () => void }) {
-  const { shipments, addShipment, markShipmentShipped } = useAppData();
+export function ShipmentsSection({ contract, onAdvance }: { contract: MasterContract; onAdvance: () => void }) {
+  const { shipments, addShipment, markShipmentShipped, subContracts } = useAppData();
   const { pushToast } = useToast();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
 
   const contractShipments = useMemo(
-    () => shipments.filter((shipment) => shipment.contractNumber === contract.contractNumber),
-    [shipments, contract.contractNumber]
+    () => shipments.filter((shipment) => shipment.masterContractId === contract.id),
+    [shipments, contract.id]
+  );
+  const contractSubContracts = useMemo(
+    () => subContracts.filter((line) => line.masterContractId === contract.id),
+    [subContracts, contract.id]
+  );
+
+  const tableData = useMemo(
+    () =>
+      contractShipments.map((shipment) => {
+        const line = contractSubContracts.find((item) => item.id === shipment.subContractId);
+        return {
+          ...shipment,
+          subContractNumber: line?.subContractNumber ?? shipment.subContractId,
+          countryOfOrigin: shipment.countryOfOrigin,
+          factory: shipment.factory
+        };
+      }),
+    [contractShipments, contractSubContracts]
   );
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm<ShipmentFormValues>({
-    resolver: zodResolver(shipmentSchema)
+    resolver: zodResolver(shipmentSchema),
+    defaultValues: {
+      updatedIspPortal: false
+    }
   });
 
   const handleCreateShipment = (values: ShipmentFormValues) => {
-    addShipment({
+    const selectedSub = contractSubContracts.find((line) => line.id === values.subContractId);
+    if (!selectedSub) {
+      pushToast({ title: "Select a sub-contract" });
+      return;
+    }
+    if (values.qtyShippedKgs > selectedSub.allocatedQtyKgs) {
+      pushToast({ title: "Qty exceeds allocation", description: "Reduce shipment qty." });
+      return;
+    }
+    const newShipment: Shipment = {
       id: `s-${crypto.randomUUID()}`,
-      contractNumber: contract.contractNumber,
-      status: "Planned",
-      ...values
-    });
+      masterContractId: contract.id,
+      subContractId: values.subContractId,
+      countryOfOrigin: selectedSub.countryOfOrigin,
+      factory: values.factory,
+      shipmentStatus: "Draft",
+      containerNumber: values.containerNumber,
+      linerSealNumber: values.linerSealNumber,
+      shippedDate: values.shippedDate,
+      blNo: values.blNo,
+      vesselName: values.vesselName,
+      voyageDetails: values.voyageDetails,
+      scacCode: values.scacCode,
+      bookingNumber: values.bookingNumber,
+      estEtaDestination: values.estEtaDestination,
+      qtyShippedKgs: values.qtyShippedKgs,
+      updatedIspPortal: values.updatedIspPortal,
+      comments: values.comments ?? "",
+      note: values.note ?? "",
+      remark: values.remark ?? ""
+    };
+    addShipment(newShipment);
     pushToast({ title: "Shipment created", description: "Shipment advice saved." });
     setOpenDrawer(false);
     reset();
@@ -69,6 +120,7 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
   };
 
   const selectedShipment = contractShipments.find((shipment) => shipment.id === selectedShipmentId);
+  const selectedSub = contractSubContracts.find((line) => line.id === selectedShipment?.subContractId);
 
   return (
     <Card>
@@ -79,41 +131,75 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Container</TableHead>
-              <TableHead>Vessel</TableHead>
-              <TableHead>ETA</TableHead>
-              <TableHead>Qty Shipped</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {contractShipments.map((shipment) => (
-              <TableRow key={shipment.id}>
-                <TableCell>{shipment.containerNumber}</TableCell>
-                <TableCell>{shipment.vesselName}</TableCell>
-                <TableCell>{shipment.estEtaDestination}</TableCell>
-                <TableCell>{shipment.qtyShippedKgs} KGS</TableCell>
-                <TableCell>{shipment.status}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedShipmentId(shipment.id)}
-                  >
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable
+          data={tableData}
+          searchPlaceholder="Search shipments"
+          filters={[
+            {
+              key: "countryOfOrigin",
+              label: "Country",
+              options: ["India", "Vietnam"]
+            },
+            {
+              key: "factory",
+              label: "Factory",
+              options: Array.from(new Set(tableData.map((row) => row.factory)))
+            },
+            {
+              key: "shipmentStatus",
+              label: "Status",
+              options: ["Draft", "In Progress", "Shipped", "Completed"]
+            }
+          ]}
+          columns={[
+            { key: "subContractNumber", header: "Sub-Contract" },
+            { key: "containerNumber", header: "Container" },
+            { key: "vesselName", header: "Vessel" },
+            { key: "estEtaDestination", header: "ETA" },
+            {
+              key: "qtyShippedKgs",
+              header: "Qty Shipped",
+              cell: (row) => `${row.qtyShippedKgs} KGS`
+            },
+            {
+              key: "shipmentStatus",
+              header: "Status",
+              cell: (row) => <StatusBadge status={row.shipmentStatus} />
+            },
+            {
+              key: "action",
+              header: "Action",
+              cell: (row) => (
+                <Button variant="ghost" size="sm" onClick={() => setSelectedShipmentId(row.id)}>
+                  View
+                </Button>
+              )
+            }
+          ]}
+        />
 
         <DrawerForm open={openDrawer} title="Create Shipment" onOpenChange={setOpenDrawer}>
           <form className="space-y-4" onSubmit={handleSubmit(handleCreateShipment)}>
+            <FormField label="Sub-Contract" error={errors.subContractId?.message}>
+              <Select
+                onValueChange={(value) => setValue("subContractId", value)}
+                defaultValue={contractSubContracts[0]?.id}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sub-contract" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectViewport>
+                    {contractSubContracts.map((line) => (
+                      <SelectItem key={line.id} value={line.id}>
+                        {line.subContractNumber} · {line.countryOfOrigin}
+                      </SelectItem>
+                    ))}
+                  </SelectViewport>
+                </SelectContent>
+              </Select>
+              <input type="hidden" {...register("subContractId")} />
+            </FormField>
             <FormField label="Container Number" error={errors.containerNumber?.message}>
               <Input {...register("containerNumber")} />
             </FormField>
@@ -121,7 +207,7 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
               <Input {...register("linerSealNumber")} />
             </FormField>
             <FormField label="Factory" error={errors.factory?.message}>
-              <Input {...register("factory")} defaultValue={contract.factory} />
+              <Input {...register("factory")} defaultValue={contractSubContracts[0]?.factory ?? ""} />
             </FormField>
             <FormField label="Shipped Date" error={errors.shippedDate?.message}>
               <Input type="date" {...register("shippedDate")} />
@@ -148,7 +234,18 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
               <Input type="number" {...register("qtyShippedKgs")} />
             </FormField>
             <FormField label="Updated ISP Portal" error={errors.updatedIspPortal?.message}>
-              <Input {...register("updatedIspPortal")} placeholder="Yes / No" />
+              <Select onValueChange={(value) => setValue("updatedIspPortal", value === "true")} defaultValue="false">
+                <SelectTrigger>
+                  <SelectValue placeholder="Updated ISP" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectViewport>
+                    <SelectItem value="true">Yes</SelectItem>
+                    <SelectItem value="false">No</SelectItem>
+                  </SelectViewport>
+                </SelectContent>
+              </Select>
+              <input type="hidden" {...register("updatedIspPortal")} />
             </FormField>
             <FormField label="Comments">
               <Textarea {...register("comments")} />
@@ -173,6 +270,10 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
           {selectedShipment ? (
             <div className="space-y-4 text-sm">
               <div>
+                <p className="text-xs text-muted-foreground">Sub-Contract</p>
+                <p className="font-medium">{selectedSub?.subContractNumber ?? "-"}</p>
+              </div>
+              <div>
                 <p className="text-xs text-muted-foreground">Container</p>
                 <p className="font-medium">{selectedShipment.containerNumber}</p>
               </div>
@@ -186,12 +287,12 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: Contract; 
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Updated ISP Portal</p>
-                <p className="font-medium">{selectedShipment.updatedIspPortal}</p>
+                <p className="font-medium">{selectedShipment.updatedIspPortal ? "Yes" : "No"}</p>
               </div>
               <Button
                 onClick={() => {
                   markShipmentShipped(selectedShipment.id);
-                  pushToast({ title: "Shipment marked shipped" });
+                  pushToast({ title: "Shipment marked as shipped" });
                 }}
               >
                 Mark Shipped

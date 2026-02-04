@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList, FileSpreadsheet, LayoutGrid, Settings, Ship, Sliders } from "lucide-react";
+import { ClipboardList, FileSpreadsheet, LayoutGrid, Settings, Ship, Sliders, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -7,7 +7,8 @@ const navItems = [
   { href: "/contracts", label: "Contracts", icon: ClipboardList },
   { href: "/reports/weekly-shipments", label: "Weekly CSV Log", icon: FileSpreadsheet },
   { href: "/reconciliation", label: "Reconciliation", icon: Ship },
-  { href: "/settings/master-data", label: "Master Data", icon: Sliders }
+  { href: "/settings/master-data", label: "Master Data", icon: Sliders },
+  { href: "/settings/pricing", label: "Pricing", icon: Tag }
 ];
 
 export function Sidebar({ currentPath }: { currentPath: string }) {

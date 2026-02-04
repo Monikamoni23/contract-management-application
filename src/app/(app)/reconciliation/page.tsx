@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadMock } from "@/components/file-upload-mock";
@@ -9,10 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast-provider";
 import { useAppData } from "@/context/app-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+
+const mappingFields = [
+  "Contract Number",
+  "Buyer Open Qty",
+  "Buyer Open Value",
+  "Buyer Status"
+];
 
 export default function ReconciliationPage() {
   const { reconciliations, resolveReconciliation } = useAppData();
   const { pushToast } = useToast();
+  const [ownerById, setOwnerById] = useState<Record<string, string>>({});
+  const [notesById, setNotesById] = useState<Record<string, string>>({});
 
   return (
     <div className="space-y-6">
@@ -26,8 +37,29 @@ export default function ReconciliationPage() {
         <CardHeader>
           <CardTitle>Upload buyer file</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <FileUploadMock onUpload={(fileName) => pushToast({ title: "File uploaded", description: fileName })} />
+          <div className="grid gap-4 md:grid-cols-2">
+            {mappingFields.map((field) => (
+              <div key={field}>
+                <p className="text-xs text-muted-foreground">Map buyer field: {field}</p>
+                <Select defaultValue="Column A">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select column" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectViewport>
+                      {["Column A", "Column B", "Column C", "Column D"].map((col) => (
+                        <SelectItem key={col} value={col}>
+                          {col}
+                        </SelectItem>
+                      ))}
+                    </SelectViewport>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
@@ -41,10 +73,14 @@ export default function ReconciliationPage() {
               <TableRow>
                 <TableHead>Contract No</TableHead>
                 <TableHead>Buyer Open Qty</TableHead>
+                <TableHead>Buyer Open Value</TableHead>
                 <TableHead>System Open Qty</TableHead>
+                <TableHead>System Open Value</TableHead>
                 <TableHead>Variance Qty</TableHead>
+                <TableHead>Variance Value</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Owner</TableHead>
+                <TableHead>Notes</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -52,26 +88,55 @@ export default function ReconciliationPage() {
               {reconciliations.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell>{record.contractNumber}</TableCell>
-                  <TableCell>{record.buyerOpenQty}</TableCell>
-                  <TableCell>{record.systemOpenQty}</TableCell>
-                  <TableCell>{record.varianceQty}</TableCell>
+                  <TableCell>{record.buyerOpenQty.toLocaleString()}</TableCell>
+                  <TableCell>${record.buyerOpenValue.toLocaleString()}</TableCell>
+                  <TableCell>{record.systemOpenQty.toLocaleString()}</TableCell>
+                  <TableCell>${record.systemOpenValue.toLocaleString()}</TableCell>
+                  <TableCell>{record.varianceQty.toLocaleString()}</TableCell>
+                  <TableCell>${record.varianceValue.toLocaleString()}</TableCell>
                   <TableCell>
                     <StatusBadge status={record.status} />
                   </TableCell>
-                  <TableCell>{record.owner}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Input placeholder="Owner" className="w-32" />
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          resolveReconciliation(record.id, "Reconciliation Team");
-                          pushToast({ title: "Record resolved" });
-                        }}
-                      >
-                        Mark Resolved
-                      </Button>
-                    </div>
+                    <Input
+                      placeholder="Owner"
+                      className="w-32"
+                      value={ownerById[record.id] ?? record.owner}
+                      onChange={(event) =>
+                        setOwnerById((prev) => ({
+                          ...prev,
+                          [record.id]: event.target.value
+                        }))
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      placeholder="Notes"
+                      className="w-40"
+                      value={notesById[record.id] ?? record.notes}
+                      onChange={(event) =>
+                        setNotesById((prev) => ({
+                          ...prev,
+                          [record.id]: event.target.value
+                        }))
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        resolveReconciliation(
+                          record.id,
+                          ownerById[record.id] ?? record.owner,
+                          notesById[record.id] ?? record.notes
+                        );
+                        pushToast({ title: "Record resolved" });
+                      }}
+                    >
+                      Mark Resolved
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

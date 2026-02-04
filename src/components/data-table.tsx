@@ -37,7 +37,7 @@ export function DataTable<T extends { id: string }>(
   const [search, setSearch] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(defaultPageSize);
-  const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>( {} );
+  const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>({});
   const [sortKey, setSortKey] = React.useState<string | null>(null);
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("asc");
 
@@ -66,7 +66,7 @@ export function DataTable<T extends { id: string }>(
       const comparison = aValue.localeCompare(bValue, undefined, { numeric: true });
       return sortDirection === "asc" ? comparison : -comparison;
     });
-  }, [data, search, activeFilters, filters]);
+  }, [data, search, activeFilters, filters, sortKey, sortDirection]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
