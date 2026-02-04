@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
-const steps = ["Create Contract", "Allocate", "Add Shipments", "Reconcile"];
+const defaultSteps = ["Create Contract", "Allocate", "Add Shipments", "Reconcile"];
 
-export function Stepper({ currentStep }: { currentStep: number }) {
+export function Stepper({ currentStep, steps = defaultSteps }: { currentStep: number; steps?: string[] }) {
   return (
     <div className="flex flex-wrap gap-4">
       {steps.map((step, index) => {

@@ -19,7 +19,7 @@ export default function ContractsPage() {
           <p className="text-sm text-muted-foreground">Manage master contracts and shipment allocations.</p>
         </div>
         <Button asChild>
-          <Link href="/contracts/new">Create Contract</Link>
+          <Link href="/contracts/new">Create Master Contract</Link>
         </Button>
       </div>
 
@@ -28,14 +28,17 @@ export default function ContractsPage() {
         searchPlaceholder="Search contracts"
         filters={[
           { key: "year", label: "Year", options: ["2024"] },
-          { key: "status", label: "Status", options: ["Open", "Closed", "Draft", "In Progress"] },
-          { key: "grade", label: "Grade", options: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard"] },
-          { key: "countryOfOrigin", label: "Country", options: ["India", "Vietnam"] },
-          { key: "factory", label: "Factory", options: [...new Set(contracts.map((c) => c.factory))] }
+          { key: "status", label: "Status", options: ["Open", "Closed", "Draft"] },
+          {
+            key: "gradeName",
+            label: "Grade",
+            options: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard", "Espresso Blend"]
+          }
         ]}
         columns={[
           { key: "contractNumber", header: "Contract No" },
-          { key: "grade", header: "Grade" },
+          { key: "rcnContractNumber", header: "RCN Contract No" },
+          { key: "gradeName", header: "Grade" },
           { key: "shipmentPeriod", header: "Shipment Period" },
           {
             key: "openQty",

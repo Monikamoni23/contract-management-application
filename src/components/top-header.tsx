@@ -14,7 +14,7 @@ export function TopHeader() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input className="w-64 pl-9" placeholder="Search contracts, shipments" />
         </div>
-        <button className="rounded-full border p-2 text-muted-foreground hover:text-foreground">
+        <button className="rounded-full border border-primary/20 bg-primary/5 p-2 text-primary hover:text-primary">
           <Bell className="h-4 w-4" />
         </button>
       </div>

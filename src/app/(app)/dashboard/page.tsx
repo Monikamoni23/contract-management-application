@@ -5,6 +5,7 @@ import { KpiCard } from "@/components/kpi-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/app-data";
+import { StatusBadge } from "@/components/status-badge";
 
 export default function DashboardPage() {
   const { contracts, shipments, reconciliations } = useAppData();
@@ -14,9 +15,16 @@ export default function DashboardPage() {
   const shipmentsThisWeek = shipments.slice(0, 7).length;
   const variances = reconciliations.filter((record) => record.status === "Mismatch").length;
 
+  const recentActivity = [
+    { label: "Master contract created", time: "Today 09:12" },
+    { label: "Sub-contract allocation confirmed", time: "Today 09:45" },
+    { label: "Shipment marked shipped", time: "Yesterday 16:18" },
+    { label: "Weekly CSV delivered", time: "Friday 09:05" }
+  ];
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold">Dashboard</h2>
           <p className="text-sm text-muted-foreground">Phase-1 snapshot of contracts and shipments.</p>
@@ -32,17 +40,17 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <KpiCard title="Total Contracts" value={String(totalContracts)} subtext="Active in Phase-1" />
+        <KpiCard title="Total Master Contracts" value={String(totalContracts)} subtext="Active in Phase-1" />
         <KpiCard title="Open Qty" value={`${openQty.toLocaleString()} KGS`} subtext="Pending shipments" />
         <KpiCard title="Open Value" value={`$${openValue.toLocaleString()}`} subtext="USD" />
         <KpiCard title="Shipments This Week" value={String(shipmentsThisWeek)} subtext="Across all buyers" />
-        <KpiCard title="Variances" value={String(variances)} subtext="Need reconciliation" />
+        <KpiCard title="Open Variances" value={String(variances)} subtext="Need reconciliation" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Quick links</CardTitle>
+            <CardTitle>Quick actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button className="w-full justify-start" variant="secondary" asChild>
@@ -59,21 +67,41 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent shipments</CardTitle>
+            <CardTitle>Recent activity</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {shipments.slice(0, 5).map((shipment) => (
-              <div key={shipment.id} className="flex items-center justify-between text-sm">
+            {recentActivity.map((activity) => (
+              <div key={activity.label} className="flex items-center justify-between text-sm">
                 <div>
-                  <p className="font-medium">{shipment.contractNumber}</p>
-                  <p className="text-xs text-muted-foreground">{shipment.containerNumber}</p>
+                  <p className="font-medium">{activity.label}</p>
+                  <p className="text-xs text-muted-foreground">{activity.time}</p>
                 </div>
-                <span className="text-xs text-muted-foreground">{shipment.qtyShippedKgs} KGS</span>
+                <StatusBadge status="In Progress" />
               </div>
             ))}
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent shipments</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {shipments.slice(0, 5).map((shipment) => {
+            const contract = contracts.find((item) => item.id === shipment.masterContractId);
+            return (
+              <div key={shipment.id} className="flex items-center justify-between text-sm">
+                <div>
+                  <p className="font-medium">{contract?.contractNumber ?? "-"}</p>
+                  <p className="text-xs text-muted-foreground">{shipment.containerNumber}</p>
+                </div>
+                <span className="text-xs text-muted-foreground">{shipment.qtyShippedKgs} KGS</span>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
     </div>
   );
 }

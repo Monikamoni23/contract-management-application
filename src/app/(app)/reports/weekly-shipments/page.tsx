@@ -9,18 +9,25 @@ import { CsvDownloadButton } from "@/components/csv-download-button";
 import { useAppData } from "@/context/app-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/toast-provider";
+import { StatusBadge } from "@/components/status-badge";
 
 export default function WeeklyShipmentsPage() {
-  const { shipments, emailLogs, addEmailLog } = useAppData();
+  const { shipments, emailLogs, addEmailLog, addWeeklyReports, contracts, subContracts } = useAppData();
   const { pushToast } = useToast();
   const [includeUpdatedOnly, setIncludeUpdatedOnly] = useState(true);
 
+  const filteredShipments = useMemo(() => {
+    return includeUpdatedOnly ? shipments.filter((s) => s.updatedIspPortal) : shipments;
+  }, [shipments, includeUpdatedOnly]);
+
   const csvString = useMemo(() => {
-    const filtered = includeUpdatedOnly ? shipments.filter((s) => s.updatedIspPortal === "Yes") : shipments;
     const headers = [
       "Contract Number",
-      "Container Number",
+      "Sub-Contract",
+      "Country",
       "Factory",
+      "Container Number",
+      "Liner Seal Number",
       "Shipped Date",
       "BLNo",
       "Vessel Name",
@@ -31,11 +38,16 @@ export default function WeeklyShipmentsPage() {
       "Qty Shipped (Kgs)",
       "Updated ISP Portal"
     ];
-    const rows = filtered.map((shipment) =>
-      [
-        shipment.contractNumber,
-        shipment.containerNumber,
+    const rows = filteredShipments.map((shipment) => {
+      const contract = contracts.find((item) => item.id === shipment.masterContractId);
+      const subContract = subContracts.find((item) => item.id === shipment.subContractId);
+      return [
+        contract?.contractNumber ?? "",
+        subContract?.subContractNumber ?? shipment.subContractId,
+        shipment.countryOfOrigin,
         shipment.factory,
+        shipment.containerNumber,
+        shipment.linerSealNumber,
         shipment.shippedDate,
         shipment.blNo,
         shipment.vesselName,
@@ -44,21 +56,36 @@ export default function WeeklyShipmentsPage() {
         shipment.bookingNumber,
         shipment.estEtaDestination,
         shipment.qtyShippedKgs,
-        shipment.updatedIspPortal
-      ].join(",")
-    );
+        shipment.updatedIspPortal ? "Yes" : "No"
+      ].join(",");
+    });
     return [headers.join(","), ...rows].join("\n");
-  }, [shipments, includeUpdatedOnly]);
+  }, [filteredShipments, contracts, subContracts]);
 
   const handleGenerated = () => {
+    const timestamp = new Date().toISOString().slice(0, 10);
     addEmailLog({
       id: `e-${crypto.randomUUID()}`,
       buyer: "Nimbus Beverages",
-      fileName: `weekly_shipments_${new Date().toISOString().slice(0, 10)}.csv`,
+      fileName: `weekly_shipments_${timestamp}.csv`,
       date: new Date().toLocaleString(),
       status: "Success",
       retryCount: 0
     });
+    const reportEntries = Array.from(
+      new Set(filteredShipments.map((shipment) => shipment.masterContractId))
+    ).map((contractId) => {
+      const contract = contracts.find((item) => item.id === contractId);
+      return {
+        id: `wr-${crypto.randomUUID()}`,
+        contractId,
+        contractNumber: contract?.contractNumber ?? "",
+        fileName: `weekly_shipments_${timestamp}.csv`,
+        runDate: new Date().toLocaleString(),
+        status: "Success" as const
+      };
+    });
+    addWeeklyReports(reportEntries);
     pushToast({ title: "CSV generated", description: "Email log updated." });
   };
 
@@ -121,7 +148,9 @@ export default function WeeklyShipmentsPage() {
                   <TableCell>{log.buyer}</TableCell>
                   <TableCell>{log.fileName}</TableCell>
                   <TableCell>{log.date}</TableCell>
-                  <TableCell>{log.status}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={log.status} />
+                  </TableCell>
                   <TableCell>{log.retryCount}</TableCell>
                 </TableRow>
               ))}

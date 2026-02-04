@@ -1,72 +1,53 @@
-# Contract Management Application (Phase-1 UI Prototype)
+# Contract Management Application (Phase-1 Prototype)
 
-This is a **UI-only** clickable prototype for the Contract Management Application Phase-1 workflow.
-It is built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui-style components**.
+UI-only clickable prototype built with Next.js App Router, TypeScript, Tailwind, and shadcn/ui.
 
-## Features
-
-- Mock authentication flow (`/login`)
-- Dashboard with KPI cards and quick links
-- Contracts list, creation, and detail views with tabs
-- Allocation editor with confirmation lock
-- Shipment advice with drawer create/edit flow
-- Weekly shipment CSV generator and email log
-- Reconciliation workflow with variance management
-- Master data settings
-
-## Getting Started
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open `http://localhost:3000` and sign in from the mock login screen.
 
-## Demo Script (Client Walkthrough)
+## Demo walkthrough
 
-1. **Login**
-   - Navigate to `/login` and click **Sign in**.
-2. **Dashboard**
-   - Review KPI cards and use quick links.
-3. **Create Contract**
-   - Go to **Contracts → Create Contract**.
-   - Fill in the form, submit to create a new contract.
-4. **Allocate**
-   - In the contract details, switch to **Allocation**.
-   - Add allocation lines and click **Confirm Allocation** (locks the editor).
-5. **Add Shipments**
-   - Move to **Shipments** tab and click **Create Shipment**.
-   - Fill out the form and save; open qty auto-updates.
-6. **Weekly CSV**
-   - Go to **Weekly Shipment CSV**.
-   - Toggle “Include updated only” and click **Generate CSV Now**.
-   - Observe the email log update.
-7. **Reconciliation**
-   - Go to **Reconciliation**.
-   - Mock upload a buyer file, then mark a variance row as resolved.
+1. **Create contract**: Go to **Contracts → Create Master Contract**. Fill required fields and submit. You will land on the contract detail page.
+2. **Allocate sub-contracts**: Open the **Sub-Contracts** tab, enter allocated quantities for India + Vietnam, and click **Confirm Allocation**.
+3. **Add shipment**: Navigate to **Shipments**, create a shipment advice record, and mark it as shipped from the shipment drawer.
+4. **Weekly CSV**: Visit **Reports → Weekly Shipment CSV**, toggle “Include updated shipments only”, and click **Generate CSV Now** to download.
+5. **Reconcile**: Go to **Reconciliation**, mock upload a buyer file, map fields, and mark a variance row as resolved.
 
-## Folder Structure (Key Areas)
+## Folder structure (highlights)
 
 ```
 src/
   app/
-    (auth)/login
-    (app)/dashboard
-    (app)/contracts
-    (app)/reports/weekly-shipments
-    (app)/reconciliation
-    (app)/settings/master-data
+    (app)/
+      contracts/
+      dashboard/
+      reconciliation/
+      reports/
+      settings/
   components/
-    sections/ (Allocation, Shipments, Reconciliation, Activity)
-    ui/ (shadcn/ui style primitives)
-  context/ (app data provider)
-  mock/ (seed data)
-  types/ (TypeScript interfaces)
+    sections/
+  context/
+  mock/
+  types/
 ```
+
+## Mock data files
+
+- `src/mock/contracts.ts`
+- `src/mock/subContracts.ts`
+- `src/mock/shipments.ts`
+- `src/mock/pricing.ts`
+- `src/mock/reconciliation.ts`
+- `src/mock/email-logs.ts`
+- `src/mock/weekly-reports.ts`
 
 ## Notes
 
-- All data is seeded in `/src/mock/seed-data.ts`.
-- All validation is client-side using **zod**.
-- This project is UI-only with no backend integration.
+- This is a UI-only prototype. State is stored in React context and resets on refresh.
+- Pricing master data (grade × country) powers auto-created sub-contract prices.
