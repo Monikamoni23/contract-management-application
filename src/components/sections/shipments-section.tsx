@@ -71,6 +71,24 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
     contractShipments.length > 0 &&
     contractShipments.every((shipment) => ["Shipped", "Completed"].includes(shipment.shipmentStatus));
 
+  const handleDownloadInvoice = () => {
+    if (!allShipmentsCompleted) return;
+    const invoiceDate = new Date().toLocaleDateString("en-GB");
+    const invoiceText = `[Company Logo]\nSeller Name\n[Address]\n[Contact Info]\nGSTIN: XXXXXXXXXXXXXX\n\nTAX INVOICE\nInvoice #: ${contract.contractNumber} | Date: ${invoiceDate}\nBill To: [Buyer Name/Address]\nCommodity: Raw Cashew Nuts (Origin: XXXXX)\nQuality: Outturn 48 lbs, Nut Count 190/kg, Moisture 10% max.\n\nDescription | Qty | Rate | Total\nCashew W320 | 500 kg | ₹650 | ₹3,25,000\n\nSubtotal: ₹3,25,000\nGST (5%): ₹16,250\nTotal Payable: ₹3,41,250\n\nDeclaration: We declare that this invoice shows the actual price of the goods.\n[Authorized Signatory]\n\nProduct: Cashew Nuts\n`;
+
+    const blob = new Blob([invoiceText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${contract.contractNumber}-invoice.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    pushToast({ title: "Invoice downloaded", description: "Review and edit the invoice file as needed." });
+  };
+
   const {
     register,
     handleSubmit,
@@ -135,6 +153,9 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
             <Button
               variant="outline"
               disabled={!allShipmentsCompleted}
+              onClick={handleDownloadInvoice}
+            >
+              Download Invoice
               onClick={() =>
                 pushToast({
                   title: "Invoice generated",
