@@ -7,7 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/form-field";
 import { Stepper } from "@/components/stepper";
@@ -23,10 +30,12 @@ const contractSchema = z.object({
   gradeId: z.string().min(1, "Grade is required"),
   shipmentPeriod: z.string().min(1, "Shipment period is required"),
   incoterms: z.string().min(1, "Incoterms are required"),
-  totalContractQuantityKgs: z.coerce.number().min(1, "Total quantity is required"),
+  totalContractQuantityKgs: z.coerce
+    .number()
+    .min(1, "Total quantity is required"),
   openBookQty: z.coerce.number().min(0, "OPEN BOOK qty is required"),
   openBookValue: z.coerce.number().min(0, "OPEN BOOK value is required"),
-  notes: z.string().optional()
+  notes: z.string().optional(),
 });
 
 type ContractFormValues = z.infer<typeof contractSchema>;
@@ -39,20 +48,21 @@ export default function ContractCreatePage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm<ContractFormValues>({
     resolver: zodResolver(contractSchema),
     defaultValues: {
-      year: "2024",
+      year: "2026",
       gradeId: grades[0]?.id,
       incoterms: "FOB",
       openBookQty: 0,
-      openBookValue: 0
-    }
+      openBookValue: 0,
+    },
   });
 
   const onSubmit = (values: ContractFormValues) => {
-    const grade = grades.find((item) => item.id === values.gradeId) ?? grades[0];
+    const grade =
+      grades.find((item) => item.id === values.gradeId) ?? grades[0];
     const id = `mc-${crypto.randomUUID()}`;
     addContract({
       id,
@@ -72,11 +82,11 @@ export default function ContractCreatePage() {
       openValue: 0,
       openBookQty: values.openBookQty,
       openBookValue: values.openBookValue,
-      allocationSummary: "India: 0 | Vietnam: 0"
+      allocationSummary: "India: 0 | Vietnam: 0",
     });
     pushToast({
       title: "Contract created",
-      description: "Master contract added successfully."
+      description: "Master contract added successfully.",
     });
     router.push(`/contracts/${id}`);
   };
@@ -85,7 +95,9 @@ export default function ContractCreatePage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold">Create Master Contract</h2>
-        <p className="text-sm text-muted-foreground">Capture master contract details for Phase-1.</p>
+        <p className="text-sm text-muted-foreground">
+          Capture master contract details for Phase-1.
+        </p>
       </div>
       <Stepper currentStep={0} />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -94,20 +106,38 @@ export default function ContractCreatePage() {
             <CardTitle>Master Contract</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
-            <FormField label="Contract Number" error={errors.contractNumber?.message}>
-              <Input {...register("contractNumber")} placeholder="MC-2024-013" />
+            <FormField
+              label="Contract Number"
+              error={errors.contractNumber?.message}
+            >
+              <Input
+                {...register("contractNumber")}
+                placeholder="MC-2024-013"
+              />
             </FormField>
-            <FormField label="RCN Contract Number" error={errors.rcnContractNumber?.message}>
-              <Input {...register("rcnContractNumber")} placeholder="RCN-7793" />
+            <FormField
+              label="RCN Contract Number"
+              error={errors.rcnContractNumber?.message}
+            >
+              <Input
+                {...register("rcnContractNumber")}
+                placeholder="RCN-7793"
+              />
             </FormField>
-            <FormField label="Date signing contract" error={errors.dateSigningContract?.message}>
+            <FormField
+              label="Date signing contract"
+              error={errors.dateSigningContract?.message}
+            >
               <Input type="date" {...register("dateSigningContract")} />
             </FormField>
             <FormField label="Year" error={errors.year?.message}>
               <Input {...register("year")} placeholder="2024" />
             </FormField>
             <FormField label="Grade" error={errors.gradeId?.message}>
-              <Select defaultValue={grades[0]?.id} onValueChange={(value) => setValue("gradeId", value)}>
+              <Select
+                defaultValue={grades[0]?.id}
+                onValueChange={(value) => setValue("gradeId", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select grade" />
                 </SelectTrigger>
@@ -123,11 +153,20 @@ export default function ContractCreatePage() {
               </Select>
               <input type="hidden" {...register("gradeId")} />
             </FormField>
-            <FormField label="Shipment Period as per Contract" error={errors.shipmentPeriod?.message}>
-              <Input {...register("shipmentPeriod")} placeholder="Jul-Sep 2024" />
+            <FormField
+              label="Shipment Period as per Contract"
+              error={errors.shipmentPeriod?.message}
+            >
+              <Input
+                {...register("shipmentPeriod")}
+                placeholder="Jul-Sep 2024"
+              />
             </FormField>
             <FormField label="Incoterms" error={errors.incoterms?.message}>
-              <Select defaultValue="FOB" onValueChange={(value) => setValue("incoterms", value)}>
+              <Select
+                defaultValue="FOB"
+                onValueChange={(value) => setValue("incoterms", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select incoterms" />
                 </SelectTrigger>
@@ -143,17 +182,29 @@ export default function ContractCreatePage() {
               </Select>
               <input type="hidden" {...register("incoterms")} />
             </FormField>
-            <FormField label="Total Contract Quantity (KGS)" error={errors.totalContractQuantityKgs?.message}>
+            <FormField
+              label="Total Contract Quantity (KGS)"
+              error={errors.totalContractQuantityKgs?.message}
+            >
               <Input type="number" {...register("totalContractQuantityKgs")} />
             </FormField>
-            <FormField label="OPEN BOOK Qty" error={errors.openBookQty?.message}>
+            <FormField
+              label="OPEN BOOK Qty"
+              error={errors.openBookQty?.message}
+            >
               <Input type="number" {...register("openBookQty")} />
             </FormField>
-            <FormField label="OPEN BOOK Value" error={errors.openBookValue?.message}>
+            <FormField
+              label="OPEN BOOK Value"
+              error={errors.openBookValue?.message}
+            >
               <Input type="number" step="0.01" {...register("openBookValue")} />
             </FormField>
             <FormField label="Notes" className="md:col-span-2">
-              <Textarea {...register("notes")} placeholder="Optional notes for logistics" />
+              <Textarea
+                {...register("notes")}
+                placeholder="Optional notes for logistics"
+              />
             </FormField>
           </CardContent>
         </Card>

@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-muted/30">
       <Sidebar currentPath={pathname} />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col w-[80%]">
         <TopHeader />
         <main className="flex-1 p-8">{children}</main>
       </div>

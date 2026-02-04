@@ -1,10 +1,15 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 export function DrawerForm({
   open,
   title,
   onOpenChange,
-  children
+  children,
 }: {
   open: boolean;
   title: string;
@@ -13,11 +18,20 @@ export function DrawerForm({
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
+      <SheetContent
+        className="
+          w-full max-w-xl
+          overflow-hidden
+          flex flex-col
+        "
+      >
+        {/* Fixed header */}
+        <SheetHeader className="border-b pb-4">
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
-        <div className="mt-6">{children}</div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto mt-4 pr-2">{children}</div>
       </SheetContent>
     </Sheet>
   );
