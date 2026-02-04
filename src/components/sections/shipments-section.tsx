@@ -156,6 +156,14 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
               onClick={handleDownloadInvoice}
             >
               Download Invoice
+              onClick={() =>
+                pushToast({
+                  title: "Invoice generated",
+                  description: "All shipments are completed. Invoice is ready to review."
+                })
+              }
+            >
+              Generate Invoice
             </Button>
             <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
           </div>
