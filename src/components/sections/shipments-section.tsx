@@ -67,6 +67,10 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
     [contractShipments, contractSubContracts]
   );
 
+  const allShipmentsCompleted =
+    contractShipments.length > 0 &&
+    contractShipments.every((shipment) => ["Shipped", "Completed"].includes(shipment.shipmentStatus));
+
   const {
     register,
     handleSubmit,
@@ -127,7 +131,21 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Shipment Advice</CardTitle>
-          <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              disabled={!allShipmentsCompleted}
+              onClick={() =>
+                pushToast({
+                  title: "Invoice generated",
+                  description: "All shipments are completed. Invoice is ready to review."
+                })
+              }
+            >
+              Generate Invoice
+            </Button>
+            <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
