@@ -52,6 +52,20 @@ const buildAllocationSummary = (lines: SubContract[]) => {
   return `India: ${india.toLocaleString()} | Vietnam: ${vietnam.toLocaleString()}`;
 };
 
+const getEffectivePrice = (
+  pricing: PricingMaster[],
+  gradeId: string,
+  countryId: "India" | "Vietnam",
+  contractDate: string
+) => {
+  const contractTimestamp = new Date(contractDate).getTime();
+  const matches = pricing
+    .filter((price) => price.gradeId === gradeId && price.countryId === countryId)
+    .filter((price) => new Date(price.effectiveFrom).getTime() <= contractTimestamp)
+    .sort((a, b) => new Date(b.effectiveFrom).getTime() - new Date(a.effectiveFrom).getTime());
+  return matches[0]?.contractPriceUsdKgs;
+};
+
 const calculateTotals = (contract: MasterContract, lines: SubContract[], shipments: Shipment[]) => {
   const totalValue = lines.reduce((sum, line) => sum + line.subContractValue, 0);
   const shippedEntries = shipments.filter(
@@ -97,19 +111,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [weeklyReports, setWeeklyReports] = React.useState<WeeklyReportLog[]>(seedWeeklyReports);
 
   const addContract = (contract: MasterContract) => {
-    const indiaPrice = pricing.find((price) => price.gradeId === contract.gradeId && price.countryId === "India")
-      ?.contractPriceUsdKgs;
-    const vietnamPrice = pricing.find((price) => price.gradeId === contract.gradeId && price.countryId === "Vietnam")
-      ?.contractPriceUsdKgs;
+    const indiaPrice =
+      getEffectivePrice(pricing, contract.gradeId, "India", contract.dateSigningContract) ?? 3.5;
+    const vietnamPrice =
+      getEffectivePrice(pricing, contract.gradeId, "Vietnam", contract.dateSigningContract) ?? 3.4;
     const newLines: SubContract[] = [
       {
         id: `${contract.id}-ind`,
         masterContractId: contract.id,
         subContractNumber: `${contract.contractNumber}-IND`,
+        gradeId: contract.gradeId,
+        gradeName: contract.gradeName,
         countryOfOrigin: "India",
         factory: "Blue River Plant",
         allocatedQtyKgs: 0,
-        contractPriceUsdKgs: indiaPrice ?? 3.5,
+        contractPriceUsdKgs: indiaPrice,
         subContractValue: 0,
         status: "Open",
         isAllocationConfirmed: false
@@ -118,10 +134,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         id: `${contract.id}-vnm`,
         masterContractId: contract.id,
         subContractNumber: `${contract.contractNumber}-VNM`,
+        gradeId: contract.gradeId,
+        gradeName: contract.gradeName,
         countryOfOrigin: "Vietnam",
         factory: "Saigon Export Hub",
         allocatedQtyKgs: 0,
-        contractPriceUsdKgs: vietnamPrice ?? 3.4,
+        contractPriceUsdKgs: vietnamPrice,
         subContractValue: 0,
         status: "Open",
         isAllocationConfirmed: false
