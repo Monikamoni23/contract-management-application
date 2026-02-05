@@ -19,7 +19,7 @@ export const buyers = [
   }
 ];
 
-export const factories = [
+export const sellers = [
   {
     name: "Blue River Plant",
     address: "Plot 22, Export Zone, Mangalore, KA 575001",
