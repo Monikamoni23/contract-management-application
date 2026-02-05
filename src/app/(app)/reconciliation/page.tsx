@@ -4,13 +4,27 @@ import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploadMock } from "@/components/file-upload-mock";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/toast-provider";
 import { useAppData } from "@/context/app-data";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from "@/components/ui/select";
 
 const mappingFields = [
   "Contract Number",
@@ -21,7 +35,7 @@ const mappingFields = [
   "Seller Sent Qty",
   "Product Origin",
   "Contract Details",
-  "Buyer Status"
+  "Buyer Status",
 ];
 
 export default function ReconciliationPage() {
@@ -34,8 +48,12 @@ export default function ReconciliationPage() {
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: "Reconciliation" }]} />
       <div>
-        <h2 className="text-2xl font-semibold">Contract Alignment & Reconciliation</h2>
-        <p className="text-sm text-muted-foreground">Align buyer open quantities with system records.</p>
+        <h2 className="text-2xl font-semibold">
+          Contract Alignment & Reconciliation
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Align buyer open quantities with system records.
+        </p>
       </div>
 
       <Card>
@@ -43,22 +61,30 @@ export default function ReconciliationPage() {
           <CardTitle>Upload buyer file</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FileUploadMock onUpload={(fileName) => pushToast({ title: "File uploaded", description: fileName })} />
+          <FileUploadMock
+            onUpload={(fileName) =>
+              pushToast({ title: "File uploaded", description: fileName })
+            }
+          />
           <div className="grid gap-4 md:grid-cols-2">
             {mappingFields.map((field) => (
               <div key={field}>
-                <p className="text-xs text-muted-foreground">Map buyer field: {field}</p>
+                <p className="text-xs text-muted-foreground">
+                  Map buyer field: {field}
+                </p>
                 <Select defaultValue="Column A">
                   <SelectTrigger>
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectViewport>
-                      {["Column A", "Column B", "Column C", "Column D"].map((col) => (
-                        <SelectItem key={col} value={col}>
-                          {col}
-                        </SelectItem>
-                      ))}
+                      {["Column A", "Column B", "Column C", "Column D"].map(
+                        (col) => (
+                          <SelectItem key={col} value={col}>
+                            {col}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectViewport>
                   </SelectContent>
                 </Select>
@@ -88,10 +114,10 @@ export default function ReconciliationPage() {
                 <TableHead>System Open Value</TableHead>
                 <TableHead>Variance Qty</TableHead>
                 <TableHead>Variance Value</TableHead>
-                <TableHead>Status</TableHead>
+                {/* <TableHead>Status</TableHead>
                 <TableHead>Owner</TableHead>
                 <TableHead>Notes</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead>Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -99,20 +125,32 @@ export default function ReconciliationPage() {
                 <TableRow key={record.id}>
                   <TableCell>{record.contractNumber}</TableCell>
                   <TableCell>{record.buyerOpenQty.toLocaleString()}</TableCell>
-                  <TableCell>${record.buyerOpenValue.toLocaleString()}</TableCell>
-                  <TableCell>${record.buyerAskedValue.toLocaleString()}</TableCell>
-                  <TableCell>{record.buyerReceivedQty.toLocaleString()} KGS</TableCell>
-                  <TableCell>{record.sellerSentQty.toLocaleString()} KGS</TableCell>
+                  <TableCell>
+                    ${record.buyerOpenValue.toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    ${record.buyerAskedValue.toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    {record.buyerReceivedQty.toLocaleString()} KGS
+                  </TableCell>
+                  <TableCell>
+                    {record.sellerSentQty.toLocaleString()} KGS
+                  </TableCell>
                   <TableCell>{record.productOrigin}</TableCell>
                   <TableCell>{record.contractDetails}</TableCell>
                   <TableCell>{record.systemOpenQty.toLocaleString()}</TableCell>
-                  <TableCell>${record.systemOpenValue.toLocaleString()}</TableCell>
-                  <TableCell>{record.varianceQty.toLocaleString()}</TableCell>
-                  <TableCell>${record.varianceValue.toLocaleString()}</TableCell>
                   <TableCell>
-                    <StatusBadge status={record.status} />
+                    ${record.systemOpenValue.toLocaleString()}
                   </TableCell>
+                  <TableCell>{record.varianceQty.toLocaleString()}</TableCell>
                   <TableCell>
+                    ${record.varianceValue.toLocaleString()}
+                  </TableCell>
+                  {/* <TableCell>
+                    <StatusBadge status={record.status} />
+                  </TableCell> */}
+                  {/* <TableCell>
                     <Input
                       placeholder="Owner"
                       className="w-32"
@@ -124,8 +162,8 @@ export default function ReconciliationPage() {
                         }))
                       }
                     />
-                  </TableCell>
-                  <TableCell>
+                  </TableCell> */}
+                  {/* <TableCell>
                     <Input
                       placeholder="Notes"
                       className="w-40"
@@ -137,8 +175,8 @@ export default function ReconciliationPage() {
                         }))
                       }
                     />
-                  </TableCell>
-                  <TableCell>
+                  </TableCell> */}
+                  {/* <TableCell>
                     <Button
                       size="sm"
                       onClick={() => {
@@ -152,7 +190,7 @@ export default function ReconciliationPage() {
                     >
                       Mark Resolved
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

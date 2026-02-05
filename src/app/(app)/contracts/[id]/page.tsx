@@ -22,7 +22,7 @@ const steps = [
   "Allocate Qty per Sub-Contract",
   "Add Shipments",
   "Weekly Report",
-  "Reconcile"
+  "Reconcile",
 ];
 
 export default function ContractDetailPage() {
@@ -50,7 +50,7 @@ export default function ContractDetailPage() {
       <Breadcrumbs
         items={[
           { label: "Contracts", href: "/contracts" },
-          { label: contract.contractNumber }
+          { label: contract.contractNumber },
         ]}
       />
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -64,8 +64,10 @@ export default function ContractDetailPage() {
           <StatusBadge status={contract.status} />
         </div>
         <div className="flex flex-col items-end gap-2">
-          <Button asChild>
-            <Link href={`/contracts/${contract.id}?tab=sub-contracts`}>Next: Sub-Contracts</Link>
+          <Button variant={"outline"} asChild>
+            <Link href={`/contracts/${contract.id}?tab=sub-contracts`}>
+              Next: Sub-Contracts
+            </Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href="/contracts">Back to Contracts</Link>
@@ -76,15 +78,21 @@ export default function ContractDetailPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border bg-card p-4">
           <p className="text-xs text-muted-foreground">Total Contract Value</p>
-          <p className="text-lg font-semibold">${contract.totalContractValue.toLocaleString()}</p>
+          <p className="text-lg font-semibold">
+            ${contract.totalContractValue.toLocaleString()}
+          </p>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <p className="text-xs text-muted-foreground">Shipped Quantity</p>
-          <p className="text-lg font-semibold">{contract.shippedQuantityKgs.toLocaleString()} KGS</p>
+          <p className="text-lg font-semibold">
+            {contract.shippedQuantityKgs.toLocaleString()} KGS
+          </p>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <p className="text-xs text-muted-foreground">Open Quantity</p>
-          <p className="text-lg font-semibold">{contract.openQty.toLocaleString()} KGS</p>
+          <p className="text-lg font-semibold">
+            {contract.openQty.toLocaleString()} KGS
+          </p>
         </div>
       </div>
 
@@ -93,22 +101,34 @@ export default function ContractDetailPage() {
       <Tabs value={activeTab} className="w-full">
         <TabsList>
           <TabsTrigger value="overview" asChild>
-            <Link href={`/contracts/${contract.id}?tab=overview`}>Overview</Link>
+            <Link href={`/contracts/${contract.id}?tab=overview`}>
+              Overview
+            </Link>
           </TabsTrigger>
           <TabsTrigger value="sub-contracts" asChild>
-            <Link href={`/contracts/${contract.id}?tab=sub-contracts`}>Sub-Contracts</Link>
+            <Link href={`/contracts/${contract.id}?tab=sub-contracts`}>
+              Sub-Contracts
+            </Link>
           </TabsTrigger>
           <TabsTrigger value="shipments" asChild>
-            <Link href={`/contracts/${contract.id}?tab=shipments`}>Shipments</Link>
+            <Link href={`/contracts/${contract.id}?tab=shipments`}>
+              Shipments
+            </Link>
           </TabsTrigger>
           <TabsTrigger value="weekly-reports" asChild>
-            <Link href={`/contracts/${contract.id}?tab=weekly-reports`}>Weekly Reports</Link>
+            <Link href={`/contracts/${contract.id}?tab=weekly-reports`}>
+              Weekly Reports
+            </Link>
           </TabsTrigger>
           <TabsTrigger value="reconciliation" asChild>
-            <Link href={`/contracts/${contract.id}?tab=reconciliation`}>Reconciliation</Link>
+            <Link href={`/contracts/${contract.id}?tab=reconciliation`}>
+              Reconciliation
+            </Link>
           </TabsTrigger>
           <TabsTrigger value="activity" asChild>
-            <Link href={`/contracts/${contract.id}?tab=activity`}>Activity Log</Link>
+            <Link href={`/contracts/${contract.id}?tab=activity`}>
+              Activity Log
+            </Link>
           </TabsTrigger>
         </TabsList>
 
@@ -117,11 +137,17 @@ export default function ContractDetailPage() {
         </TabsContent>
 
         <TabsContent value="sub-contracts">
-          <SubContractsSection contract={contract} onAdvance={() => setCurrentStep(3)} />
+          <SubContractsSection
+            contract={contract}
+            onAdvance={() => setCurrentStep(3)}
+          />
         </TabsContent>
 
         <TabsContent value="shipments">
-          <ShipmentsSection contract={contract} onAdvance={() => setCurrentStep(4)} />
+          <ShipmentsSection
+            contract={contract}
+            onAdvance={() => setCurrentStep(4)}
+          />
         </TabsContent>
 
         <TabsContent value="weekly-reports">

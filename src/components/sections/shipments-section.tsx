@@ -249,7 +249,9 @@ export function ShipmentsSection({
               Generate Invoice
             </Button>
 
-            <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
+            <Button variant="outline" onClick={() => setOpenDrawer(true)}>
+              Create Shipment
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -423,7 +425,9 @@ export function ShipmentsSection({
               <Textarea {...register("remark")} />
             </FormField>
             <div className="flex justify-end">
-              <Button type="submit">Save Shipment</Button>
+              <Button variant={"outline"} type="submit">
+                Save Shipment
+              </Button>
             </div>
           </form>
         </DrawerForm>
@@ -467,6 +471,7 @@ export function ShipmentsSection({
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button
+                  variant={"outline"}
                   onClick={() => {
                     markShipmentShipped(selectedShipment.id);
                     pushToast({ title: "Shipment marked as shipped" });

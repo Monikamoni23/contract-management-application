@@ -85,21 +85,21 @@ export default function DashboardPage() {
           <CardContent className="space-y-3">
             <Button
               className="w-full justify-start"
-              variant="secondary"
+              variant={"outline"}
               asChild
             >
               <Link href="/contracts/new">Create Contract</Link>
             </Button>
             <Button
               className="w-full justify-start"
-              variant="secondary"
+              variant={"outline"}
               asChild
             >
               <Link href="/reports/weekly-shipments">Weekly Shipment CSV</Link>
             </Button>
             <Button
               className="w-full justify-start"
-              variant="secondary"
+              variant={"outline"}
               asChild
             >
               <Link href="/reconciliation">Contract Reconciliation</Link>

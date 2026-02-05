@@ -1,4 +1,10 @@
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 export function ConfirmDialog({
@@ -6,7 +12,7 @@ export function ConfirmDialog({
   title,
   description,
   onCancel,
-  onConfirm
+  onConfirm,
 }: {
   open: boolean;
   title: string;
@@ -25,7 +31,9 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={onConfirm}>Confirm</Button>
+          <Button variant="outline" onClick={onConfirm}>
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

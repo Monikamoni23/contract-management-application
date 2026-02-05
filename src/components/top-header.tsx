@@ -6,13 +6,16 @@ export function TopHeader() {
     <header className="flex items-center justify-between border-b bg-background px-8 py-4">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span className="font-medium text-foreground">Good morning</span>
-        <span>·</span>
-        <span>Phase-1 Pilot</span>
+        {/* <span>·</span> */}
+        {/* <span>Phase-1 Pilot</span> */}
       </div>
       <div className="flex items-center gap-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input className="w-64 pl-9" placeholder="Search contracts, shipments" />
+          <Input
+            className="w-64 pl-9"
+            placeholder="Search contracts, shipments"
+          />
         </div>
         <button className="rounded-full border border-primary/20 bg-primary/5 p-2 text-primary hover:text-primary">
           <Bell className="h-4 w-4" />

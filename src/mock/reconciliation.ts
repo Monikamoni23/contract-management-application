@@ -3,7 +3,7 @@ import { ReconciliationRow } from "@/types";
 export const reconciliationRows: ReconciliationRow[] = [
   {
     id: "rec-001",
-    contractNumber: "MC-001",
+    contractNumber: "412382",
     buyerOpenQty: 9800,
     buyerOpenValue: 34500,
     buyerAskedValue: 36000,
@@ -13,16 +13,16 @@ export const reconciliationRows: ReconciliationRow[] = [
     contractDetails: "Arabica Grade 1 · FOB",
     systemOpenQty: 10200,
     systemOpenValue: 35600,
-    varianceQty: -400,
-    varianceValue: -1100,
+    varianceQty: 400,
+    varianceValue: 1100,
     status: "Mismatch",
     owner: "",
     lastUpdated: "2024-07-18",
-    notes: "Awaiting buyer confirmation"
+    notes: "Buyer received more than system recorded",
   },
   {
     id: "rec-002",
-    contractNumber: "MC-002",
+    contractNumber: "412383",
     buyerOpenQty: 11200,
     buyerOpenValue: 39800,
     buyerAskedValue: 39800,
@@ -37,11 +37,11 @@ export const reconciliationRows: ReconciliationRow[] = [
     status: "Matched",
     owner: "",
     lastUpdated: "2024-07-18",
-    notes: ""
+    notes: "",
   },
   {
     id: "rec-003",
-    contractNumber: "MC-003",
+    contractNumber: "412384",
     buyerOpenQty: 8900,
     buyerOpenValue: 32900,
     buyerAskedValue: 34000,
@@ -51,16 +51,16 @@ export const reconciliationRows: ReconciliationRow[] = [
     contractDetails: "Robusta Premium · FOB",
     systemOpenQty: 9100,
     systemOpenValue: 33500,
-    varianceQty: -200,
-    varianceValue: -600,
+    varianceQty: 200,
+    varianceValue: 600,
     status: "Mismatch",
     owner: "",
     lastUpdated: "2024-07-19",
-    notes: "Buyer file shows split shipment"
+    notes: "Buyer file shows split shipment",
   },
   {
     id: "rec-004",
-    contractNumber: "MC-004",
+    contractNumber: "412385",
     buyerOpenQty: 10400,
     buyerOpenValue: 36500,
     buyerAskedValue: 37200,
@@ -75,11 +75,11 @@ export const reconciliationRows: ReconciliationRow[] = [
     status: "Mismatch",
     owner: "Raj",
     lastUpdated: "2024-07-20",
-    notes: ""
+    notes: "System shows more delivered than buyer confirmed",
   },
   {
     id: "rec-005",
-    contractNumber: "MC-005",
+    contractNumber: "412386",
     buyerOpenQty: 12600,
     buyerOpenValue: 42400,
     buyerAskedValue: 42400,
@@ -94,11 +94,11 @@ export const reconciliationRows: ReconciliationRow[] = [
     status: "Matched",
     owner: "",
     lastUpdated: "2024-07-20",
-    notes: ""
+    notes: "",
   },
   {
     id: "rec-006",
-    contractNumber: "MC-006",
+    contractNumber: "412387",
     buyerOpenQty: 9750,
     buyerOpenValue: 35200,
     buyerAskedValue: 36000,
@@ -108,11 +108,11 @@ export const reconciliationRows: ReconciliationRow[] = [
     contractDetails: "Arabica Grade 1 · CIF",
     systemOpenQty: 10150,
     systemOpenValue: 36200,
-    varianceQty: -400,
-    varianceValue: -1000,
+    varianceQty: 400,
+    varianceValue: 1000,
     status: "Mismatch",
     owner: "",
     lastUpdated: "2024-07-21",
-    notes: "Pending buyer ETA update"
-  }
+    notes: "Pending buyer ETA update",
+  },
 ];

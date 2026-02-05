@@ -209,7 +209,9 @@ export default function ContractCreatePage() {
           </CardContent>
         </Card>
         <div className="flex justify-end">
-          <Button type="submit">Create Contract</Button>
+          <Button variant={"outline"} type="submit">
+            Create Contract
+          </Button>
         </div>
       </form>
     </div>
