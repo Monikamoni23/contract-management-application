@@ -14,7 +14,14 @@ import { useAppData } from "@/context/app-data";
 import { MasterContract, Shipment } from "@/types";
 import { useToast } from "@/components/toast-provider";
 import { StatusBadge } from "@/components/status-badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from "@/components/ui/select";
 import { DataTable } from "@/components/data-table";
 
 const shipmentSchema = z.object({
@@ -33,43 +40,57 @@ const shipmentSchema = z.object({
   updatedIspPortal: z.boolean(),
   comments: z.string().optional(),
   note: z.string().optional(),
-  remark: z.string().optional()
+  remark: z.string().optional(),
 });
 
 type ShipmentFormValues = z.infer<typeof shipmentSchema>;
 
-export function ShipmentsSection({ contract, onAdvance }: { contract: MasterContract; onAdvance: () => void }) {
-  const { shipments, addShipment, markShipmentShipped, subContracts } = useAppData();
+export function ShipmentsSection({
+  contract,
+  onAdvance,
+}: {
+  contract: MasterContract;
+  onAdvance: () => void;
+}) {
+  const { shipments, addShipment, markShipmentShipped, subContracts } =
+    useAppData();
   const { pushToast } = useToast();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
+  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(
+    null,
+  );
 
   const contractShipments = useMemo(
-    () => shipments.filter((shipment) => shipment.masterContractId === contract.id),
-    [shipments, contract.id]
+    () =>
+      shipments.filter((shipment) => shipment.masterContractId === contract.id),
+    [shipments, contract.id],
   );
   const contractSubContracts = useMemo(
     () => subContracts.filter((line) => line.masterContractId === contract.id),
-    [subContracts, contract.id]
+    [subContracts, contract.id],
   );
 
   const tableData = useMemo(
     () =>
       contractShipments.map((shipment) => {
-        const line = contractSubContracts.find((item) => item.id === shipment.subContractId);
+        const line = contractSubContracts.find(
+          (item) => item.id === shipment.subContractId,
+        );
         return {
           ...shipment,
           subContractNumber: line?.subContractNumber ?? shipment.subContractId,
           countryOfOrigin: shipment.countryOfOrigin,
-          factory: shipment.factory
+          factory: shipment.factory,
         };
       }),
-    [contractShipments, contractSubContracts]
+    [contractShipments, contractSubContracts],
   );
 
   const allShipmentsCompleted =
     contractShipments.length > 0 &&
-    contractShipments.every((shipment) => ["Shipped", "Completed"].includes(shipment.shipmentStatus));
+    contractShipments.every((shipment) =>
+      ["Shipped", "Completed"].includes(shipment.shipmentStatus),
+    );
 
   const handleDownloadInvoice = () => {
     if (!allShipmentsCompleted) return;
@@ -86,7 +107,10 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
     link.remove();
     URL.revokeObjectURL(url);
 
-    pushToast({ title: "Invoice downloaded", description: "Review and edit the invoice file as needed." });
+    pushToast({
+      title: "Invoice downloaded",
+      description: "Review and edit the invoice file as needed.",
+    });
   };
 
   const {
@@ -94,22 +118,27 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
     handleSubmit,
     formState: { errors },
     reset,
-    setValue
+    setValue,
   } = useForm<ShipmentFormValues>({
     resolver: zodResolver(shipmentSchema),
     defaultValues: {
-      updatedIspPortal: false
-    }
+      updatedIspPortal: false,
+    },
   });
 
   const handleCreateShipment = (values: ShipmentFormValues) => {
-    const selectedSub = contractSubContracts.find((line) => line.id === values.subContractId);
+    const selectedSub = contractSubContracts.find(
+      (line) => line.id === values.subContractId,
+    );
     if (!selectedSub) {
       pushToast({ title: "Select a sub-contract" });
       return;
     }
     if (values.qtyShippedKgs > selectedSub.allocatedQtyKgs) {
-      pushToast({ title: "Qty exceeds allocation", description: "Reduce shipment qty." });
+      pushToast({
+        title: "Qty exceeds allocation",
+        description: "Reduce shipment qty.",
+      });
       return;
     }
     const newShipment: Shipment = {
@@ -132,39 +161,47 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
       updatedIspPortal: values.updatedIspPortal,
       comments: values.comments ?? "",
       note: values.note ?? "",
-      remark: values.remark ?? ""
+      remark: values.remark ?? "",
     };
     addShipment(newShipment);
-    pushToast({ title: "Shipment created", description: "Shipment advice saved." });
+    pushToast({
+      title: "Shipment created",
+      description: "Shipment advice saved.",
+    });
     setOpenDrawer(false);
     reset();
     onAdvance();
   };
 
-  const selectedShipment = contractShipments.find((shipment) => shipment.id === selectedShipmentId);
-  const selectedSub = contractSubContracts.find((line) => line.id === selectedShipment?.subContractId);
+  const selectedShipment = contractShipments.find(
+    (shipment) => shipment.id === selectedShipmentId,
+  );
+  const selectedSub = contractSubContracts.find(
+    (line) => line.id === selectedShipment?.subContractId,
+  );
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Shipment Advice</CardTitle>
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               disabled={!allShipmentsCompleted}
-              onClick={handleDownloadInvoice}
-            >
-              Download Invoice
-              onClick={() =>
+              onClick={() => {
+                handleDownloadInvoice();
                 pushToast({
                   title: "Invoice generated",
-                  description: "All shipments are completed. Invoice is ready to review."
-                })
-              }
+                  description:
+                    "All shipments are completed. Invoice is ready to review.",
+                });
+              }}
             >
               Generate Invoice
             </Button>
+
             <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
           </div>
         </div>
@@ -177,18 +214,18 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
             {
               key: "countryOfOrigin",
               label: "Country",
-              options: ["India", "Vietnam"]
+              options: ["India", "Vietnam"],
             },
             {
               key: "factory",
               label: "Factory",
-              options: Array.from(new Set(tableData.map((row) => row.factory)))
+              options: Array.from(new Set(tableData.map((row) => row.factory))),
             },
             {
               key: "shipmentStatus",
               label: "Status",
-              options: ["Draft", "In Progress", "Shipped", "Completed"]
-            }
+              options: ["Draft", "In Progress", "Shipped", "Completed"],
+            },
           ]}
           columns={[
             { key: "subContractNumber", header: "Sub-Contract" },
@@ -198,28 +235,42 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
             {
               key: "qtyShippedKgs",
               header: "Qty Shipped",
-              cell: (row) => `${row.qtyShippedKgs} KGS`
+              cell: (row) => `${row.qtyShippedKgs} KGS`,
             },
             {
               key: "shipmentStatus",
               header: "Status",
-              cell: (row) => <StatusBadge status={row.shipmentStatus} />
+              cell: (row) => <StatusBadge status={row.shipmentStatus} />,
             },
             {
               key: "action",
               header: "Action",
               cell: (row) => (
-                <Button variant="ghost" size="sm" onClick={() => setSelectedShipmentId(row.id)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedShipmentId(row.id)}
+                >
                   View
                 </Button>
-              )
-            }
+              ),
+            },
           ]}
         />
 
-        <DrawerForm open={openDrawer} title="Create Shipment" onOpenChange={setOpenDrawer}>
-          <form className="space-y-4" onSubmit={handleSubmit(handleCreateShipment)}>
-            <FormField label="Sub-Contract" error={errors.subContractId?.message}>
+        <DrawerForm
+          open={openDrawer}
+          title="Create Shipment"
+          onOpenChange={setOpenDrawer}
+        >
+          <form
+            className="space-y-4"
+            onSubmit={handleSubmit(handleCreateShipment)}
+          >
+            <FormField
+              label="Sub-Contract"
+              error={errors.subContractId?.message}
+            >
               <Select
                 onValueChange={(value) => setValue("subContractId", value)}
                 defaultValue={contractSubContracts[0]?.id}
@@ -239,14 +290,23 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
               </Select>
               <input type="hidden" {...register("subContractId")} />
             </FormField>
-            <FormField label="Container Number" error={errors.containerNumber?.message}>
+            <FormField
+              label="Container Number"
+              error={errors.containerNumber?.message}
+            >
               <Input {...register("containerNumber")} />
             </FormField>
-            <FormField label="Liner Seal Number" error={errors.linerSealNumber?.message}>
+            <FormField
+              label="Liner Seal Number"
+              error={errors.linerSealNumber?.message}
+            >
               <Input {...register("linerSealNumber")} />
             </FormField>
             <FormField label="Factory" error={errors.factory?.message}>
-              <Input {...register("factory")} defaultValue={contractSubContracts[0]?.factory ?? ""} />
+              <Input
+                {...register("factory")}
+                defaultValue={contractSubContracts[0]?.factory ?? ""}
+              />
             </FormField>
             <FormField label="Shipped Date" error={errors.shippedDate?.message}>
               <Input type="date" {...register("shippedDate")} />
@@ -257,23 +317,43 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
             <FormField label="Vessel Name" error={errors.vesselName?.message}>
               <Input {...register("vesselName")} />
             </FormField>
-            <FormField label="Voyage Details" error={errors.voyageDetails?.message}>
+            <FormField
+              label="Voyage Details"
+              error={errors.voyageDetails?.message}
+            >
               <Input {...register("voyageDetails")} />
             </FormField>
             <FormField label="SCAC Code" error={errors.scacCode?.message}>
               <Input {...register("scacCode")} />
             </FormField>
-            <FormField label="Booking Number" error={errors.bookingNumber?.message}>
+            <FormField
+              label="Booking Number"
+              error={errors.bookingNumber?.message}
+            >
               <Input {...register("bookingNumber")} />
             </FormField>
-            <FormField label="Est. ETA Destination" error={errors.estEtaDestination?.message}>
+            <FormField
+              label="Est. ETA Destination"
+              error={errors.estEtaDestination?.message}
+            >
               <Input type="date" {...register("estEtaDestination")} />
             </FormField>
-            <FormField label="Qty Shipped (KGS)" error={errors.qtyShippedKgs?.message}>
+            <FormField
+              label="Qty Shipped (KGS)"
+              error={errors.qtyShippedKgs?.message}
+            >
               <Input type="number" {...register("qtyShippedKgs")} />
             </FormField>
-            <FormField label="Updated ISP Portal" error={errors.updatedIspPortal?.message}>
-              <Select onValueChange={(value) => setValue("updatedIspPortal", value === "true")} defaultValue="false">
+            <FormField
+              label="Updated ISP Portal"
+              error={errors.updatedIspPortal?.message}
+            >
+              <Select
+                onValueChange={(value) =>
+                  setValue("updatedIspPortal", value === "true")
+                }
+                defaultValue="false"
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Updated ISP" />
                 </SelectTrigger>
@@ -310,11 +390,15 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
             <div className="space-y-4 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">Sub-Contract</p>
-                <p className="font-medium">{selectedSub?.subContractNumber ?? "-"}</p>
+                <p className="font-medium">
+                  {selectedSub?.subContractNumber ?? "-"}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Container</p>
-                <p className="font-medium">{selectedShipment.containerNumber}</p>
+                <p className="font-medium">
+                  {selectedShipment.containerNumber}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Vessel</p>
@@ -322,11 +406,17 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Qty Shipped</p>
-                <p className="font-medium">{selectedShipment.qtyShippedKgs} KGS</p>
+                <p className="font-medium">
+                  {selectedShipment.qtyShippedKgs} KGS
+                </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Updated ISP Portal</p>
-                <p className="font-medium">{selectedShipment.updatedIspPortal ? "Yes" : "No"}</p>
+                <p className="text-xs text-muted-foreground">
+                  Updated ISP Portal
+                </p>
+                <p className="font-medium">
+                  {selectedShipment.updatedIspPortal ? "Yes" : "No"}
+                </p>
               </div>
               <Button
                 onClick={() => {

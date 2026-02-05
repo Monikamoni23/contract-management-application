@@ -81,8 +81,8 @@ export default function ContractsPage() {
                   <DropdownMenuItem asChild>
                     <Link href={`/contracts/${row.id}`}>View</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Edit (mock)</DropdownMenuItem>
-                  <DropdownMenuItem>Export (mock)</DropdownMenuItem>
+                  {/* <DropdownMenuItem>Edit (mock)</DropdownMenuItem>
+                  <DropdownMenuItem>Export (mock)</DropdownMenuItem> */}
                 </DropdownMenuContent>
               </DropdownMenu>
             ),

@@ -9,9 +9,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-muted/30">
       <Sidebar currentPath={pathname} />
-      <div className="flex flex-1 flex-col w-[80%]">
+      <div className="flex flex-1 flex-col w-[80%] h-[100vh]">
         <TopHeader />
-        <main className="flex-1 p-8">{children}</main>
+        <main className="flex-1 p-8 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
