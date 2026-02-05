@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export function CsvDownloadButton({
   csvString,
   fileName,
-  onGenerated
+  onGenerated,
 }: {
   csvString: string;
   fileName: string;
@@ -24,5 +24,9 @@ export function CsvDownloadButton({
     onGenerated?.();
   };
 
-  return <Button onClick={handleDownload}>Generate CSV Now</Button>;
+  return (
+    <Button variant={"outline"} onClick={handleDownload}>
+      Generate CSV Now
+    </Button>
+  );
 }

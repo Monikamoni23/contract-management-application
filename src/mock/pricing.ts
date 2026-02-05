@@ -1,12 +1,12 @@
 import { PricingMaster } from "@/types";
 
 export const grades = [
-  { id: "grade-arabica-1", name: "Arabica Grade 1" },
-  { id: "grade-arabica-2", name: "Arabica Grade 2" },
-  { id: "grade-robusta-premium", name: "Robusta Premium" },
-  { id: "grade-robusta-standard", name: "Robusta Standard" },
-  { id: "grade-blend-espresso", name: "Espresso Blend" },
-  { id: "grade-sw320-sw360", name: "SW320/SW360" }
+  { id: "grade-sw320-sw360", name: "SW320/SW360" },
+  { id: "grade-sw320-sw361", name: "SW320/SW361" },
+  { id: "grade-sw320-sw362", name: "SW320/SW362" },
+  { id: "grade-sw320-sw363", name: "SW320/SW363" },
+  { id: "grade-sw320-sw364", name: "SW320/SW364" },
+  { id: "grade-sw320-sw365", name: "SW320/SW365" },
 ];
 
 export const countries: Array<"India" | "Vietnam"> = ["India", "Vietnam"];
@@ -21,7 +21,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdLbs: 4.54,
     effectiveFrom: "2025-12-10",
     isActive: true,
-    notes: "Excel sample price"
+    notes: "Excel sample price",
   },
   {
     id: "price-000-vnm",
@@ -32,7 +32,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdLbs: 4.54,
     effectiveFrom: "2025-12-10",
     isActive: true,
-    notes: "Excel sample price"
+    notes: "Excel sample price",
   },
   {
     id: "price-001",
@@ -43,7 +43,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdLbs: 1.93,
     effectiveFrom: "2024-01-01",
     isActive: true,
-    notes: "Premium harvest window"
+    notes: "Premium harvest window",
   },
   {
     id: "price-002",
@@ -53,7 +53,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 4100,
     contractPriceUsdLbs: 1.86,
     effectiveFrom: "2024-01-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-003",
@@ -63,7 +63,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 3850,
     contractPriceUsdLbs: 1.75,
     effectiveFrom: "2024-02-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-004",
@@ -73,7 +73,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 3720,
     contractPriceUsdLbs: 1.69,
     effectiveFrom: "2024-02-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-005",
@@ -83,7 +83,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 3450,
     contractPriceUsdLbs: 1.57,
     effectiveFrom: "2024-03-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-006",
@@ -93,7 +93,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 3280,
     contractPriceUsdLbs: 1.49,
     effectiveFrom: "2024-03-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-007",
@@ -103,7 +103,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 3050,
     contractPriceUsdLbs: 1.38,
     effectiveFrom: "2024-01-15",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-008",
@@ -113,7 +113,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 2920,
     contractPriceUsdLbs: 1.32,
     effectiveFrom: "2024-01-15",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-009",
@@ -123,7 +123,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 4600,
     contractPriceUsdLbs: 2.09,
     effectiveFrom: "2024-04-01",
-    isActive: true
+    isActive: true,
   },
   {
     id: "price-010",
@@ -133,6 +133,6 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdMt: 4400,
     contractPriceUsdLbs: 2.0,
     effectiveFrom: "2024-04-01",
-    isActive: true
-  }
+    isActive: true,
+  },
 ];

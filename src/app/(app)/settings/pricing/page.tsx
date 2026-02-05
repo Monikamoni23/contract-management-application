@@ -5,7 +5,14 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectViewport } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from "@/components/ui/select";
 import { DataTable } from "@/components/data-table";
 import { useAppData } from "@/context/app-data";
 import { DrawerForm } from "@/components/drawer-form";
@@ -20,20 +27,26 @@ export default function PricingMasterPage() {
 
   const gradeNameById = useMemo(
     () => new Map(grades.map((grade) => [grade.id, grade.name])),
-    []
+    [],
   );
 
   const tableData = useMemo(
     () =>
       pricing.map((row) => ({
         ...row,
-        gradeName: gradeNameById.get(row.gradeId) ?? row.gradeId
+        gradeName: gradeNameById.get(row.gradeId) ?? row.gradeId,
       })),
-    [pricing, gradeNameById]
+    [pricing, gradeNameById],
   );
 
-  const gradeOptions = useMemo(() => Array.from(new Set(tableData.map((row) => row.gradeName))), [tableData]);
-  const countryOptions = useMemo(() => Array.from(new Set(tableData.map((row) => row.countryId))), [tableData]);
+  const gradeOptions = useMemo(
+    () => Array.from(new Set(tableData.map((row) => row.gradeName))),
+    [tableData],
+  );
+  const countryOptions = useMemo(
+    () => Array.from(new Set(tableData.map((row) => row.countryId))),
+    [tableData],
+  );
 
   return (
     <div className="space-y-6">
@@ -41,9 +54,13 @@ export default function PricingMasterPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold">Grade × Country Pricing</h2>
-          <p className="text-sm text-muted-foreground">Manage pricing master used for auto allocation.</p>
+          <p className="text-sm text-muted-foreground">
+            Manage pricing master used for auto allocation.
+          </p>
         </div>
-        <Button onClick={() => setOpen(true)}>Add Pricing</Button>
+        <Button variant={"outline"} onClick={() => setOpen(true)}>
+          Add Pricing
+        </Button>
       </div>
 
       <Card>
@@ -56,7 +73,7 @@ export default function PricingMasterPage() {
             searchPlaceholder="Search pricing"
             filters={[
               { key: "gradeName", label: "Grade", options: gradeOptions },
-              { key: "countryId", label: "Country", options: countryOptions }
+              { key: "countryId", label: "Country", options: countryOptions },
             ]}
             columns={[
               { key: "gradeName", header: "Grade" },
@@ -64,17 +81,17 @@ export default function PricingMasterPage() {
               {
                 key: "contractPriceUsdKgs",
                 header: "USD / KGS",
-                cell: (row) => `$${row.contractPriceUsdKgs}`
+                cell: (row) => `$${row.contractPriceUsdKgs}`,
               },
               {
                 key: "effectiveFrom",
-                header: "Effective From"
+                header: "Effective From",
               },
               {
                 key: "isActive",
                 header: "Status",
-                cell: (row) => (row.isActive ? "Active" : "Inactive")
-              }
+                cell: (row) => (row.isActive ? "Active" : "Inactive"),
+              },
             ]}
           />
         </CardContent>
@@ -121,12 +138,16 @@ export default function PricingMasterPage() {
             <Input type="date" />
           </FormField>
           <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
-            Only one active row per grade + country. Existing active rows will be deactivated in Phase-2.
+            Only one active row per grade + country. Existing active rows will
+            be deactivated in Phase-2.
           </div>
           <div className="flex justify-end">
             <Button
               onClick={() => {
-                pushToast({ title: "Pricing saved", description: "Mock pricing row created." });
+                pushToast({
+                  title: "Pricing saved",
+                  description: "Mock pricing row created.",
+                });
                 setOpen(false);
               }}
             >

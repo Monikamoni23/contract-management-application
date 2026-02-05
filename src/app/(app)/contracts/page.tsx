@@ -25,7 +25,7 @@ export default function ContractsPage() {
             Manage master contracts and shipment allocations.
           </p>
         </div>
-        <Button asChild>
+        <Button variant="outline" asChild>
           <Link href="/contracts/new">Create Master Contract</Link>
         </Button>
       </div>
