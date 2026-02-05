@@ -1,7 +1,13 @@
 import { PricingMaster } from "@/types";
 
-export const grades = [{ id: "grade-sw320-sw360", name: "SW320/SW360" }];
-
+export const grades = [
+ { id: "grade-sw320-sw360", name: "SW320/SW360" },
+  { id: "grade-sw320-sw360", name: "SW320/SW361" },
+ { id: "grade-sw320-sw360", name: "SW320/SW362" },
+ { id: "grade-sw320-sw360", name: "SW320/SW363" },
+ { id: "grade-sw320-sw360", name: "SW320/SW364" },
+  { id: "grade-sw320-sw360", name: "SW320/SW365" }
+];
 export const countries: Array<"India" | "Vietnam"> = ["India", "Vietnam"];
 
 export const pricingMaster: PricingMaster[] = [

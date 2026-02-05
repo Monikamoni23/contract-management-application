@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { buyers, sellers } from "@/mock/master-data";
 
 const masterData = {
-  Grades: ["SW320/SW360"],
+  Grades: ["SW320/SW360","SW320/SW361","SW320/SW362","SW320/SW363","SW320/SW364","SW320/SW365"],
   Countries: ["India", "Vietnam"],
   "Email Recipients": ["ops@nimbus.com", "logistics@harbor.com"]
 };
