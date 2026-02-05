@@ -16,6 +16,11 @@ const mappingFields = [
   "Contract Number",
   "Buyer Open Qty",
   "Buyer Open Value",
+  "Buyer Asked Value",
+  "Buyer Received Qty",
+  "Seller Sent Qty",
+  "Product Origin",
+  "Contract Details",
   "Buyer Status"
 ];
 
@@ -74,6 +79,11 @@ export default function ReconciliationPage() {
                 <TableHead>Contract No</TableHead>
                 <TableHead>Buyer Open Qty</TableHead>
                 <TableHead>Buyer Open Value</TableHead>
+                <TableHead>Buyer Asked Value</TableHead>
+                <TableHead>Buyer Received</TableHead>
+                <TableHead>Seller Sent</TableHead>
+                <TableHead>Product Origin</TableHead>
+                <TableHead>Contract Details</TableHead>
                 <TableHead>System Open Qty</TableHead>
                 <TableHead>System Open Value</TableHead>
                 <TableHead>Variance Qty</TableHead>
@@ -90,6 +100,11 @@ export default function ReconciliationPage() {
                   <TableCell>{record.contractNumber}</TableCell>
                   <TableCell>{record.buyerOpenQty.toLocaleString()}</TableCell>
                   <TableCell>${record.buyerOpenValue.toLocaleString()}</TableCell>
+                  <TableCell>${record.buyerAskedValue.toLocaleString()}</TableCell>
+                  <TableCell>{record.buyerReceivedQty.toLocaleString()} KGS</TableCell>
+                  <TableCell>{record.sellerSentQty.toLocaleString()} KGS</TableCell>
+                  <TableCell>{record.productOrigin}</TableCell>
+                  <TableCell>{record.contractDetails}</TableCell>
                   <TableCell>{record.systemOpenQty.toLocaleString()}</TableCell>
                   <TableCell>${record.systemOpenValue.toLocaleString()}</TableCell>
                   <TableCell>{record.varianceQty.toLocaleString()}</TableCell>
