@@ -1,14 +1,22 @@
 import { PricingMaster } from "@/types";
 
 export const grades = [
+<<<<<<< HEAD
   { id: "grade-sw320-sw360", name: "SW320/SW360" },
   { id: "grade-sw320-sw361", name: "SW320/SW361" },
   { id: "grade-sw320-sw362", name: "SW320/SW362" },
   { id: "grade-sw320-sw363", name: "SW320/SW363" },
   { id: "grade-sw320-sw364", name: "SW320/SW364" },
   { id: "grade-sw320-sw365", name: "SW320/SW365" },
+=======
+ { id: "grade-sw320-sw360", name: "SW320/SW360" },
+  { id: "grade-sw320-sw360", name: "SW320/SW361" },
+ { id: "grade-sw320-sw360", name: "SW320/SW362" },
+ { id: "grade-sw320-sw360", name: "SW320/SW363" },
+ { id: "grade-sw320-sw360", name: "SW320/SW364" },
+  { id: "grade-sw320-sw360", name: "SW320/SW365" }
+>>>>>>> 0f4d7b276242f8dd5661a6047df553a2a130e7f5
 ];
-
 export const countries: Array<"India" | "Vietnam"> = ["India", "Vietnam"];
 
 export const pricingMaster: PricingMaster[] = [
@@ -32,6 +40,7 @@ export const pricingMaster: PricingMaster[] = [
     contractPriceUsdLbs: 4.54,
     effectiveFrom: "2025-12-10",
     isActive: true,
+<<<<<<< HEAD
     notes: "Excel sample price",
   },
   {
@@ -135,4 +144,8 @@ export const pricingMaster: PricingMaster[] = [
     effectiveFrom: "2024-04-01",
     isActive: true,
   },
+=======
+    notes: "Excel sample price"
+  }
+>>>>>>> 0f4d7b276242f8dd5661a6047df553a2a130e7f5
 ];
