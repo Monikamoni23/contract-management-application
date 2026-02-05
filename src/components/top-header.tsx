@@ -5,7 +5,7 @@ export function TopHeader() {
   return (
     <header className="flex items-center justify-between border-b bg-background px-8 py-4">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span className="font-medium text-foreground">Good morning, Priya</span>
+        <span className="font-medium text-foreground">Good morning</span>
         <span>·</span>
         <span>Phase-1 Pilot</span>
       </div>

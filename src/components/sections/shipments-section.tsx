@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,11 +52,20 @@ export function ShipmentsSection({
   contract: MasterContract;
   onAdvance: () => void;
 }) {
-  const { shipments, addShipment, markShipmentShipped, subContracts } =
-    useAppData();
+  const {
+    shipments,
+    addShipment,
+    updateShipment,
+    removeShipment,
+    markShipmentShipped,
+    subContracts,
+  } = useAppData();
   const { pushToast } = useToast();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(
+    null,
+  );
+  const [editingShipmentId, setEditingShipmentId] = useState<string | null>(
     null,
   );
 
@@ -126,6 +135,32 @@ export function ShipmentsSection({
     },
   });
 
+  useEffect(() => {
+    if (!editingShipmentId) return;
+    const editingShipment = contractShipments.find(
+      (shipment) => shipment.id === editingShipmentId,
+    );
+    if (!editingShipment) return;
+    reset({
+      subContractId: editingShipment.subContractId,
+      containerNumber: editingShipment.containerNumber,
+      linerSealNumber: editingShipment.linerSealNumber,
+      factory: editingShipment.factory,
+      shippedDate: editingShipment.shippedDate,
+      blNo: editingShipment.blNo,
+      vesselName: editingShipment.vesselName,
+      voyageDetails: editingShipment.voyageDetails,
+      scacCode: editingShipment.scacCode,
+      bookingNumber: editingShipment.bookingNumber,
+      estEtaDestination: editingShipment.estEtaDestination,
+      qtyShippedKgs: editingShipment.qtyShippedKgs,
+      updatedIspPortal: editingShipment.updatedIspPortal,
+      comments: editingShipment.comments,
+      note: editingShipment.note,
+      remark: editingShipment.remark,
+    });
+  }, [editingShipmentId, contractShipments, reset]);
+
   const handleCreateShipment = (values: ShipmentFormValues) => {
     const selectedSub = contractSubContracts.find(
       (line) => line.id === values.subContractId,
@@ -141,13 +176,16 @@ export function ShipmentsSection({
       });
       return;
     }
+    const existingShipment = editingShipmentId
+      ? contractShipments.find((shipment) => shipment.id === editingShipmentId)
+      : null;
     const newShipment: Shipment = {
-      id: `s-${crypto.randomUUID()}`,
+      id: existingShipment?.id ?? `s-${crypto.randomUUID()}`,
       masterContractId: contract.id,
       subContractId: values.subContractId,
       countryOfOrigin: selectedSub.countryOfOrigin,
       factory: values.factory,
-      shipmentStatus: "Draft",
+      shipmentStatus: existingShipment?.shipmentStatus ?? "Draft",
       containerNumber: values.containerNumber,
       linerSealNumber: values.linerSealNumber,
       shippedDate: values.shippedDate,
@@ -163,12 +201,21 @@ export function ShipmentsSection({
       note: values.note ?? "",
       remark: values.remark ?? "",
     };
-    addShipment(newShipment);
-    pushToast({
-      title: "Shipment created",
-      description: "Shipment advice saved.",
-    });
+    if (existingShipment) {
+      updateShipment(newShipment);
+      pushToast({
+        title: "Shipment updated",
+        description: "Shipment details saved.",
+      });
+    } else {
+      addShipment(newShipment);
+      pushToast({
+        title: "Shipment created",
+        description: "Shipment advice saved.",
+      });
+    }
     setOpenDrawer(false);
+    setEditingShipmentId(null);
     reset();
     onAdvance();
   };
@@ -418,14 +465,36 @@ export function ShipmentsSection({
                   {selectedShipment.updatedIspPortal ? "Yes" : "No"}
                 </p>
               </div>
-              <Button
-                onClick={() => {
-                  markShipmentShipped(selectedShipment.id);
-                  pushToast({ title: "Shipment marked as shipped" });
-                }}
-              >
-                Mark Shipped
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => {
+                    markShipmentShipped(selectedShipment.id);
+                    pushToast({ title: "Shipment marked as shipped" });
+                  }}
+                >
+                  Mark Shipped
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingShipmentId(selectedShipment.id);
+                    setSelectedShipmentId(null);
+                    setOpenDrawer(true);
+                  }}
+                >
+                  Edit Shipment
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    removeShipment(selectedShipment.id);
+                    pushToast({ title: "Shipment deleted" });
+                    setSelectedShipmentId(null);
+                  }}
+                >
+                  Delete Shipment
+                </Button>
+              </div>
             </div>
           ) : null}
         </DrawerForm>

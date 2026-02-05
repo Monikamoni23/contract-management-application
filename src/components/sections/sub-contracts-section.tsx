@@ -46,6 +46,10 @@ export function SubContractsSection({ contract, onAdvance }: { contract: MasterC
     );
   };
 
+  const removeLine = (id: string) => {
+    setDraftLines((prev) => prev.filter((line) => line.id !== id));
+  };
+
   const handleConfirm = () => {
     if (hasError) {
       pushToast({
@@ -115,6 +119,15 @@ export function SubContractsSection({ contract, onAdvance }: { contract: MasterC
               <div>
                 <p className="text-xs text-muted-foreground">Value</p>
                 <p className="text-sm font-medium">${line.subContractValue.toLocaleString()}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => removeLine(line.id)}
+                  disabled={isLocked}
+                >
+                  Delete Line
+                </Button>
               </div>
             </div>
           ))}

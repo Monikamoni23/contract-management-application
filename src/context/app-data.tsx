@@ -30,6 +30,8 @@ export type AppDataContextValue = {
   updateSubContracts: (contractId: string, lines: SubContract[]) => void;
   confirmAllocation: (contractId: string, lines?: SubContract[]) => void;
   addShipment: (shipment: Shipment) => void;
+  updateShipment: (shipment: Shipment) => void;
+  removeShipment: (shipmentId: string) => void;
   markShipmentShipped: (shipmentId: string) => void;
   addEmailLog: (entry: EmailLogEntry) => void;
   addWeeklyReports: (entries: WeeklyReportLog[]) => void;
@@ -196,6 +198,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setShipments((prev) => [shipment, ...prev]);
   };
 
+  const updateContractTotals = (contractId: string, nextShipments: Shipment[]) => {
+    const lines = subContracts.filter((line) => line.masterContractId === contractId);
+    setContracts((prev) =>
+      prev.map((contract) => {
+        if (contract.id !== contractId) return contract;
+        const totals = calculateTotals(contract, lines, nextShipments);
+        return {
+          ...contract,
+          status: totals.openQty === 0 ? "Closed" : contract.status,
+          totalContractValue: totals.totalValue,
+          shippedQuantityKgs: totals.shippedQty,
+          openQty: totals.openQty,
+          openValue: totals.openValue
+        };
+      })
+    );
+  };
+
+  const updateShipment = (updatedShipment: Shipment) => {
+    setShipments((prev) => {
+      const nextShipments = prev.map((shipment) =>
+        shipment.id === updatedShipment.id ? updatedShipment : shipment
+      );
+      updateContractTotals(updatedShipment.masterContractId, nextShipments);
+      return nextShipments;
+    });
+  };
+
+  const removeShipment = (shipmentId: string) => {
+    setShipments((prev) => {
+      const shipment = prev.find((item) => item.id === shipmentId);
+      if (!shipment) return prev;
+      const nextShipments = prev.filter((item) => item.id !== shipmentId);
+      updateContractTotals(shipment.masterContractId, nextShipments);
+      return nextShipments;
+    });
+  };
+
   const markShipmentShipped = (shipmentId: string) => {
     setShipments((prev) =>
       prev.map((shipment) =>
@@ -263,6 +303,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         updateSubContracts,
         confirmAllocation,
         addShipment,
+        updateShipment,
+        removeShipment,
         markShipmentShipped,
         addEmailLog,
         addWeeklyReports,

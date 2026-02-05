@@ -5,9 +5,15 @@ import { Button } from "@/components/ui/button";
 import { buyers, factories } from "@/mock/master-data";
 
 const masterData = {
-  Grades: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard", "Espresso Blend"],
+  Grades: [
+    "Arabica Grade 1",
+    "Arabica Grade 2",
+    "Robusta Premium",
+    "Robusta Standard",
+    "Espresso Blend",
+  ],
   Countries: ["India", "Vietnam"],
-  "Email Recipients": ["ops@nimbus.com", "logistics@harbor.com"]
+  "Email Recipients": ["ops@nimbus.com", "logistics@harbor.com"],
 };
 
 export default function MasterDataPage() {
@@ -17,7 +23,9 @@ export default function MasterDataPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold">Master Data</h2>
-          <p className="text-sm text-muted-foreground">Seeded metadata for demo flows.</p>
+          <p className="text-sm text-muted-foreground">
+            Seeded metadata for demo flows.
+          </p>
         </div>
         <Button asChild variant="outline">
           <Link href="/settings/pricing">Manage Pricing</Link>
@@ -32,9 +40,15 @@ export default function MasterDataPage() {
             {buyers.map((buyer) => (
               <div key={buyer.name} className="rounded-md bg-muted px-3 py-2">
                 <p className="font-medium">{buyer.name}</p>
-                <p className="text-xs text-muted-foreground">Billing: {buyer.billingAddress}</p>
-                <p className="text-xs text-muted-foreground">Contact: {buyer.contact}</p>
-                <p className="text-xs text-muted-foreground">GSTIN: {buyer.gstin}</p>
+                <p className="text-xs text-muted-foreground">
+                  Billing: {buyer.billingAddress}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Contact: {buyer.contact}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  GSTIN: {buyer.gstin}
+                </p>
               </div>
             ))}
           </CardContent>
@@ -47,8 +61,12 @@ export default function MasterDataPage() {
             {factories.map((factory) => (
               <div key={factory.name} className="rounded-md bg-muted px-3 py-2">
                 <p className="font-medium">{factory.name}</p>
-                <p className="text-xs text-muted-foreground">Address: {factory.address}</p>
-                <p className="text-xs text-muted-foreground">Contact: {factory.contact}</p>
+                <p className="text-xs text-muted-foreground">
+                  Address: {factory.address}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Contact: {factory.contact}
+                </p>
               </div>
             ))}
           </CardContent>
