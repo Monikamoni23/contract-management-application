@@ -1,30 +1,27 @@
 import { MasterContract } from "@/types";
 import { grades } from "@/mock/pricing";
 
-const gradeByIndex = (index: number) => grades[index % grades.length];
+const sampleGrade = grades.find((grade) => grade.id === "grade-sw320-sw360") ?? grades[0];
 
-export const masterContracts: MasterContract[] = Array.from({ length: 12 }).map((_, index) => {
-  const contractIndex = index + 1;
-  const grade = gradeByIndex(index);
-  const totalQty = 18000 + index * 1200;
-  return {
-    id: `mc-${String(contractIndex).padStart(3, "0")}`,
-    contractNumber: `MC-${String(contractIndex).padStart(3, "0")}`,
-    rcnContractNumber: `RCN-${7400 + contractIndex}`,
-    dateSigningContract: `2024-0${(index % 6) + 1}-12`,
-    year: "2024",
-    gradeId: grade.id,
-    gradeName: grade.name,
-    status: contractIndex % 5 === 0 ? "Closed" : contractIndex % 4 === 0 ? "Draft" : "Open",
-    shipmentPeriod: "Jul-Sep 2024",
-    incoterms: contractIndex % 2 === 0 ? "FOB" : "CIF",
-    totalContractQuantityKgs: totalQty,
-    totalContractValue: totalQty * 3.6,
-    shippedQuantityKgs: totalQty * 0.35,
-    openQty: totalQty * 0.65,
-    openValue: totalQty * 0.65 * 3.6,
-    openBookQty: totalQty * 0.6,
-    openBookValue: totalQty * 0.6 * 3.6,
+export const masterContracts: MasterContract[] = [
+  {
+    id: "mc-412382",
+    contractNumber: "412382",
+    rcnContractNumber: "XX its for future",
+    dateSigningContract: "2025-12-10",
+    year: "2025",
+    gradeId: sampleGrade.id,
+    gradeName: sampleGrade.name,
+    status: "Open",
+    shipmentPeriod: "May-26",
+    incoterms: "FOB",
+    totalContractQuantityKgs: 99792,
+    totalContractValue: 997920,
+    shippedQuantityKgs: 0,
+    openQty: 99792,
+    openValue: 997920,
+    openBookQty: 99792,
+    openBookValue: 997920,
     allocationSummary: "India: 0 | Vietnam: 0"
-  };
-});
+  }
+];
