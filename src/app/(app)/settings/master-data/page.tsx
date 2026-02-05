@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { buyers, sellers } from "@/mock/master-data";
 
 const masterData = {
-  Grades: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard", "Espresso Blend"],
+  Grades: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard", "Espresso Blend", "SW320/SW360"],
   Countries: ["India", "Vietnam"],
   "Email Recipients": ["ops@nimbus.com", "logistics@harbor.com"]
 };
@@ -41,14 +41,14 @@ export default function MasterDataPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Factories</CardTitle>
+            <CardTitle>Sellers</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {factories.map((factory) => (
-              <div key={factory.name} className="rounded-md bg-muted px-3 py-2">
-                <p className="font-medium">{factory.name}</p>
-                <p className="text-xs text-muted-foreground">Address: {factory.address}</p>
-                <p className="text-xs text-muted-foreground">Contact: {factory.contact}</p>
+            {sellers.map((seller) => (
+              <div key={seller.name} className="rounded-md bg-muted px-3 py-2">
+                <p className="font-medium">{seller.name}</p>
+                <p className="text-xs text-muted-foreground">Address: {seller.address}</p>
+                <p className="text-xs text-muted-foreground">Contact: {seller.contact}</p>
               </div>
             ))}
           </CardContent>
