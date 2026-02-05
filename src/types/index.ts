@@ -26,6 +26,8 @@ export interface SubContract {
   id: string;
   masterContractId: string;
   subContractNumber: string;
+  gradeId?: string;
+  gradeName?: string;
   countryOfOrigin: "India" | "Vietnam";
   factory?: string;
   allocatedQtyKgs: number;
@@ -76,6 +78,11 @@ export interface ReconciliationRow {
   contractNumber: string;
   buyerOpenQty: number;
   buyerOpenValue: number;
+  buyerAskedValue: number;
+  buyerReceivedQty: number;
+  sellerSentQty: number;
+  productOrigin: string;
+  contractDetails: string;
   systemOpenQty: number;
   systemOpenValue: number;
   varianceQty: number;

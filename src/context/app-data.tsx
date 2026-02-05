@@ -30,6 +30,8 @@ export type AppDataContextValue = {
   updateSubContracts: (contractId: string, lines: SubContract[]) => void;
   confirmAllocation: (contractId: string, lines?: SubContract[]) => void;
   addShipment: (shipment: Shipment) => void;
+  updateShipment: (shipment: Shipment) => void;
+  removeShipment: (shipmentId: string) => void;
   markShipmentShipped: (shipmentId: string) => void;
   addEmailLog: (entry: EmailLogEntry) => void;
   addWeeklyReports: (entries: WeeklyReportLog[]) => void;
@@ -50,6 +52,20 @@ const buildAllocationSummary = (lines: SubContract[]) => {
   const india = lines.find((line) => line.countryOfOrigin === "India")?.allocatedQtyKgs ?? 0;
   const vietnam = lines.find((line) => line.countryOfOrigin === "Vietnam")?.allocatedQtyKgs ?? 0;
   return `India: ${india.toLocaleString()} | Vietnam: ${vietnam.toLocaleString()}`;
+};
+
+const getEffectivePrice = (
+  pricing: PricingMaster[],
+  gradeId: string,
+  countryId: "India" | "Vietnam",
+  contractDate: string
+) => {
+  const contractTimestamp = new Date(contractDate).getTime();
+  const matches = pricing
+    .filter((price) => price.gradeId === gradeId && price.countryId === countryId)
+    .filter((price) => new Date(price.effectiveFrom).getTime() <= contractTimestamp)
+    .sort((a, b) => new Date(b.effectiveFrom).getTime() - new Date(a.effectiveFrom).getTime());
+  return matches[0]?.contractPriceUsdKgs;
 };
 
 const calculateTotals = (contract: MasterContract, lines: SubContract[], shipments: Shipment[]) => {
@@ -97,19 +113,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [weeklyReports, setWeeklyReports] = React.useState<WeeklyReportLog[]>(seedWeeklyReports);
 
   const addContract = (contract: MasterContract) => {
-    const indiaPrice = pricing.find((price) => price.gradeId === contract.gradeId && price.countryId === "India")
-      ?.contractPriceUsdKgs;
-    const vietnamPrice = pricing.find((price) => price.gradeId === contract.gradeId && price.countryId === "Vietnam")
-      ?.contractPriceUsdKgs;
+    const indiaPrice =
+      getEffectivePrice(pricing, contract.gradeId, "India", contract.dateSigningContract) ?? 3.5;
+    const vietnamPrice =
+      getEffectivePrice(pricing, contract.gradeId, "Vietnam", contract.dateSigningContract) ?? 3.4;
     const newLines: SubContract[] = [
       {
         id: `${contract.id}-ind`,
         masterContractId: contract.id,
         subContractNumber: `${contract.contractNumber}-IND`,
+        gradeId: contract.gradeId,
+        gradeName: contract.gradeName,
         countryOfOrigin: "India",
         factory: "Blue River Plant",
         allocatedQtyKgs: 0,
-        contractPriceUsdKgs: indiaPrice ?? 3.5,
+        contractPriceUsdKgs: indiaPrice,
         subContractValue: 0,
         status: "Open",
         isAllocationConfirmed: false
@@ -118,10 +136,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         id: `${contract.id}-vnm`,
         masterContractId: contract.id,
         subContractNumber: `${contract.contractNumber}-VNM`,
+        gradeId: contract.gradeId,
+        gradeName: contract.gradeName,
         countryOfOrigin: "Vietnam",
         factory: "Saigon Export Hub",
         allocatedQtyKgs: 0,
-        contractPriceUsdKgs: vietnamPrice ?? 3.4,
+        contractPriceUsdKgs: vietnamPrice,
         subContractValue: 0,
         status: "Open",
         isAllocationConfirmed: false
@@ -176,6 +196,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const addShipment = (shipment: Shipment) => {
     setShipments((prev) => [shipment, ...prev]);
+  };
+
+  const updateContractTotals = (contractId: string, nextShipments: Shipment[]) => {
+    const lines = subContracts.filter((line) => line.masterContractId === contractId);
+    setContracts((prev) =>
+      prev.map((contract) => {
+        if (contract.id !== contractId) return contract;
+        const totals = calculateTotals(contract, lines, nextShipments);
+        return {
+          ...contract,
+          status: totals.openQty === 0 ? "Closed" : contract.status,
+          totalContractValue: totals.totalValue,
+          shippedQuantityKgs: totals.shippedQty,
+          openQty: totals.openQty,
+          openValue: totals.openValue
+        };
+      })
+    );
+  };
+
+  const updateShipment = (updatedShipment: Shipment) => {
+    setShipments((prev) => {
+      const nextShipments = prev.map((shipment) =>
+        shipment.id === updatedShipment.id ? updatedShipment : shipment
+      );
+      updateContractTotals(updatedShipment.masterContractId, nextShipments);
+      return nextShipments;
+    });
+  };
+
+  const removeShipment = (shipmentId: string) => {
+    setShipments((prev) => {
+      const shipment = prev.find((item) => item.id === shipmentId);
+      if (!shipment) return prev;
+      const nextShipments = prev.filter((item) => item.id !== shipmentId);
+      updateContractTotals(shipment.masterContractId, nextShipments);
+      return nextShipments;
+    });
   };
 
   const markShipmentShipped = (shipmentId: string) => {
@@ -245,6 +303,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         updateSubContracts,
         confirmAllocation,
         addShipment,
+        updateShipment,
+        removeShipment,
         markShipmentShipped,
         addEmailLog,
         addWeeklyReports,
