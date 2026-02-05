@@ -75,90 +75,19 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
   const handleDownloadInvoice = () => {
     if (!allShipmentsCompleted) return;
     const invoiceDate = new Date().toLocaleDateString("en-GB");
-    const invoiceWindow = window.open("", "_blank", "width=900,height=1000");
-    if (!invoiceWindow) {
-      pushToast({ title: "Popup blocked", description: "Allow popups to preview and download the invoice." });
-      return;
-    }
-    const invoiceHtml = `<!doctype html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>Invoice ${contract.contractNumber}</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 40px; color: #111; }
-            h1 { margin: 0 0 8px; font-size: 22px; }
-            h2 { margin: 0; font-size: 16px; }
-            .row { display: flex; justify-content: space-between; }
-            .muted { color: #555; font-size: 12px; }
-            .invoice { border: 1px solid #ddd; padding: 24px; border-radius: 8px; }
-            .toolbar { display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 12px; }
-            .btn { padding: 8px 12px; border: 1px solid #222; border-radius: 6px; background: #fff; cursor: pointer; }
-            .table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-            .table th, .table td { border: 1px solid #ddd; padding: 8px; font-size: 13px; text-align: left; }
-            .total { text-align: right; margin-top: 12px; font-weight: bold; }
-            .editable { outline: none; }
-            @media print {
-              .toolbar { display: none; }
-              body { margin: 0; }
-              .invoice { border: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="toolbar">
-            <button class="btn" onclick="window.print()">Download PDF</button>
-          </div>
-          <div class="invoice editable" contenteditable="true">
-            <div class="row">
-              <div>
-                <h1>[Company Logo]</h1>
-                <div class="muted">Seller Name</div>
-                <div class="muted">[Address]</div>
-                <div class="muted">[Contact Info]</div>
-                <div class="muted">GSTIN: XXXXXXXXXXXXXX</div>
-              </div>
-              <div>
-                <h2>TAX INVOICE</h2>
-                <div class="muted">Invoice #: ${contract.contractNumber}</div>
-                <div class="muted">Date: ${invoiceDate}</div>
-              </div>
-            </div>
-            <hr />
-            <div class="muted">Bill To: [Buyer Name/Address]</div>
-            <div class="muted">Commodity: Raw Cashew Nuts (Origin: XXXXX)</div>
-            <div class="muted">Quality: Outturn 48 lbs, Nut Count 190/kg, Moisture 10% max.</div>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Qty</th>
-                  <th>Rate</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Cashew W320</td>
-                  <td>500 kg</td>
-                  <td>₹650</td>
-                  <td>₹3,25,000</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="total">Subtotal: ₹3,25,000</div>
-            <div class="total">GST (5%): ₹16,250</div>
-            <div class="total">Total Payable: ₹3,41,250</div>
-            <p class="muted">Declaration: We declare that this invoice shows the actual price of the goods.</p>
-            <p class="muted">[Authorized Signatory]</p>
-            <p class="muted">Product: Cashew Nuts</p>
-          </div>
-        </body>
-      </html>`;
-    invoiceWindow.document.open();
-    invoiceWindow.document.write(invoiceHtml);
-    invoiceWindow.document.close();
-    pushToast({ title: "Invoice ready", description: "Edit the invoice and click Download PDF." });
+    const invoiceText = `[Company Logo]\nSeller Name\n[Address]\n[Contact Info]\nGSTIN: XXXXXXXXXXXXXX\n\nTAX INVOICE\nInvoice #: ${contract.contractNumber} | Date: ${invoiceDate}\nBill To: [Buyer Name/Address]\nCommodity: Raw Cashew Nuts (Origin: XXXXX)\nQuality: Outturn 48 lbs, Nut Count 190/kg, Moisture 10% max.\n\nDescription | Qty | Rate | Total\nCashew W320 | 500 kg | ₹650 | ₹3,25,000\n\nSubtotal: ₹3,25,000\nGST (5%): ₹16,250\nTotal Payable: ₹3,41,250\n\nDeclaration: We declare that this invoice shows the actual price of the goods.\n[Authorized Signatory]\n\nProduct: Cashew Nuts\n`;
+
+    const blob = new Blob([invoiceText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${contract.contractNumber}-invoice.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    pushToast({ title: "Invoice downloaded", description: "Review and edit the invoice file as needed." });
   };
 
   const {
@@ -260,17 +189,17 @@ export function ShipmentsSection({ contract, onAdvance }: { contract: MasterCont
               disabled={!allShipmentsCompleted}
               onClick={handleDownloadInvoice}
             >
-              Download Invoice (PDF)
-            </Button>
-            <Button
-              onClick={() => {
-                setEditingShipmentId(null);
-                reset({ updatedIspPortal: false } as ShipmentFormValues);
-                setOpenDrawer(true);
-              }}
+              Download Invoice
+              onClick={() =>
+                pushToast({
+                  title: "Invoice generated",
+                  description: "All shipments are completed. Invoice is ready to review."
+                })
+              }
             >
-              Create Shipment
+              Generate Invoice
             </Button>
+            <Button onClick={() => setOpenDrawer(true)}>Create Shipment</Button>
           </div>
         </div>
       </CardHeader>

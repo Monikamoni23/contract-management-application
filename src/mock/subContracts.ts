@@ -12,15 +12,15 @@ const getPrice = (gradeId: string, countryId: "India" | "Vietnam", contractDate:
 };
 
 export const subContracts: SubContract[] = masterContracts.flatMap((contract) => {
-  const indiaQty = 0;
-  const vietnamQty = 0;
+  const indiaQty = Math.round(contract.totalContractQuantityKgs * 0.55);
+  const vietnamQty = contract.totalContractQuantityKgs - indiaQty;
   const indiaPrice = getPrice(contract.gradeId, "India", contract.dateSigningContract);
   const vietnamPrice = getPrice(contract.gradeId, "Vietnam", contract.dateSigningContract);
   return [
     {
       id: `${contract.id}-ind`,
       masterContractId: contract.id,
-      subContractNumber: "N/A",
+      subContractNumber: `${contract.contractNumber}-IND`,
       gradeId: contract.gradeId,
       gradeName: contract.gradeName,
       countryOfOrigin: "India",
@@ -34,7 +34,7 @@ export const subContracts: SubContract[] = masterContracts.flatMap((contract) =>
     {
       id: `${contract.id}-vnm`,
       masterContractId: contract.id,
-      subContractNumber: "N/A",
+      subContractNumber: `${contract.contractNumber}-VNM`,
       gradeId: contract.gradeId,
       gradeName: contract.gradeName,
       countryOfOrigin: "Vietnam",
