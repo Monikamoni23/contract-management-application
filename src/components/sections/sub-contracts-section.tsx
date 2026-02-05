@@ -85,6 +85,8 @@ export function SubContractsSection({ contract, onAdvance }: { contract: MasterC
                 <p className="text-xs text-muted-foreground">Country</p>
                 <p className="text-sm font-medium">{line.countryOfOrigin}</p>
                 <p className="text-xs text-muted-foreground">{line.subContractNumber}</p>
+                <p className="text-xs text-muted-foreground">Grade</p>
+                <p className="text-sm font-medium">{line.gradeName ?? "-"}</p>
               </div>
               <FormField label="Factory" className="md:col-span-1">
                 <Input
