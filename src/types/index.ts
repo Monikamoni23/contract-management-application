@@ -26,6 +26,8 @@ export interface SubContract {
   id: string;
   masterContractId: string;
   subContractNumber: string;
+  gradeId?: string;
+  gradeName?: string;
   countryOfOrigin: "India" | "Vietnam";
   factory?: string;
   allocatedQtyKgs: number;
