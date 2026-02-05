@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { buyers, factories } from "@/mock/master-data";
+import { buyers, sellers } from "@/mock/master-data";
 
 const masterData = {
   Grades: ["Arabica Grade 1", "Arabica Grade 2", "Robusta Premium", "Robusta Standard", "Espresso Blend"],

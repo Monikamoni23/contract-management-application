@@ -78,6 +78,11 @@ export interface ReconciliationRow {
   contractNumber: string;
   buyerOpenQty: number;
   buyerOpenValue: number;
+  buyerAskedValue: number;
+  buyerReceivedQty: number;
+  sellerSentQty: number;
+  productOrigin: string;
+  contractDetails: string;
   systemOpenQty: number;
   systemOpenValue: number;
   varianceQty: number;
